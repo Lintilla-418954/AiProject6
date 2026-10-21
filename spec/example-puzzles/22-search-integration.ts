@@ -14,8 +14,15 @@ export default definePuzzle({
   helper: "/{pattern}<CR> searches forward for text and jumps the cursor to the first match. Combine with x from Grid moves to fix what you land on.",
   hints: ["/X<CR> jumps straight to the garbled line, landing on the stray X; x cuts it."],
   scene: {
-    tiles: ["......", ".P....", "......"],
-    robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "SCANNER-4 opens the bay, retrieves the core, then closes the bay.", conditions: [{ text: "Program parses; all four statements are well-formed." }] },
+    tiles: [".....", ".B...", "....."],
+    robotStart: { x: 0, y: 1, facing: "E" },
+    entities: [
+      { kind: "door", name: "bay1", tile: "B", open: false },
+      { kind: "cargo", name: "core", x: 2, y: 1 },
+    ],
+    objective: {
+      text: "SCANNER-4 opens the bay, retrieves the core, then closes the bay behind it.",
+      conditions: [{ holding: "core" }, { device: { name: "bay1", is: "closed" } }],
+    },
   },
 });

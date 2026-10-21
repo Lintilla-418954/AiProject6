@@ -14,8 +14,15 @@ export default definePuzzle({
   helper: ":g/pattern/cmd runs an ex command on every line matching pattern, across the whole program; :v is its inverse, matching every line that doesn't.",
   hints: ["Every debug line starts with #. :g/^#/d deletes all of them in one command."],
   scene: {
-    tiles: ["......", ".P....", "......"],
-    robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "SCANNER-4 opens the bay, moves, then closes it, with no debug noise.", conditions: [{ text: "Program parses with exactly three statements and no comment lines." }] },
+    tiles: [".....", ".B...", "....."],
+    robotStart: { x: 0, y: 1, facing: "E" },
+    entities: [
+      { kind: "door", name: "bay1", tile: "B", open: false },
+    ],
+    maxLines: 3,
+    objective: {
+      text: "SCANNER-4 opens the bay, passes through, then closes it; its memory holds only three lines.",
+      conditions: [{ robotAt: { x: 2, y: 1 } }, { device: { name: "bay1", is: "closed" } }],
+    },
   },
 });

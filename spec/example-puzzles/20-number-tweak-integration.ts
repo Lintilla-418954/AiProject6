@@ -14,8 +14,14 @@ export default definePuzzle({
   helper: "<C-a> adds one to the number under or after the cursor; <C-x> subtracts. Repeat it to cover a bigger gap.",
   hints: ["Cursor sits on the 1. Two <C-a> presses turn it into 3."],
   scene: {
-    tiles: ["......", ".P....", "......"],
-    robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "PUMP-9 waits three ticks before moving.", conditions: [{ text: "Program parses; wait() argument equals 3." }] },
+    tiles: ["......", ".D.P..", "......"],
+    robotStart: { x: 0, y: 1, facing: "E" },
+    entities: [
+      { kind: "door", name: "blast", tile: "D", open: false, schedule: [{ at: 3, open: true }] },
+    ],
+    objective: {
+      text: "PUMP-9 waits for the blast door to open, then moves onto the pad.",
+      conditions: [{ robotAt: { x: 3, y: 1 } }],
+    },
   },
 });

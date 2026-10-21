@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "prototype:scene": "vite prototype/scene-binding",
-    "prototype:solver": "node prototype/solver/bench.ts"
+    "prototype:solver": "node prototype/solver/bench.ts",
+    "verify:examples": "node spec/verify-examples.ts"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

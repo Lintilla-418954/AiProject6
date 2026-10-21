@@ -1,12 +1,14 @@
 // Replays each example Puzzle's optimal Solution through headless Neovim
 // (driven via a pty, since nvim_feedkeys misbehaves for macro recording in
 // scripted/headless mode) with the engine's fixed option profile, and
-// checks it lands on target.
+// checks it lands on target. Also checks, via the reference interpreter, that the
+// target program meets the Scene's Objective and the start program does not.
 import { execSync, spawn } from "node:child_process";
 import { mkdtempSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readdirSync } from "node:fs";
+import { run } from "./robot-interpreter.ts";
 
 // Translate our key-notation (e.g. "<Esc>", "<C-a>", "<CR>") into raw bytes a pty expects.
 const SPECIAL: Record<string, string> = {
@@ -106,9 +108,18 @@ let failed = 0;
 for (const file of files) {
   const mod = await import(join(dir, file));
   const p = mod.default;
+  const startRun = run(p.scene, p.start);
+  const targetRun = run(p.scene, p.target);
+  if (startRun.success || !targetRun.success) {
+    failed++;
+    console.log(`FAIL ${p.id} (scene)`);
+    if (startRun.success) console.log("  start program already meets the Objective");
+    if (!targetRun.success) console.log("  target program fails:", targetRun.failure);
+    continue;
+  }
   const r = await verify(p.id, p.start, p.target, p.cursor, p.optimal);
   if (r.ok) {
-    console.log(`OK   ${p.id}`);
+    console.log(`OK   ${p.id} (start: ${startRun.failure})`);
   } else {
     failed++;
     console.log(`FAIL ${p.id} (mode=${r.mode})`);

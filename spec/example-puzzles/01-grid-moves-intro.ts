@@ -14,8 +14,11 @@ export default definePuzzle({
   helper: "h j k l move the cursor one cell at a time. x cuts the character under the cursor.",
   hints: ["Move down twice then right four times to reach the extra e, then press x."],
   scene: {
-    tiles: ["......", ".P....", "......"],
-    robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "HAULER-7 runs its program without halting on a garbled instruction.", conditions: [{ text: "Program parses line by line with no garbled instruction." }] },
+    tiles: ["......", "..P...", "......", "......"],
+    robotStart: { x: 1, y: 3, facing: "E" },
+    objective: {
+      text: "HAULER-7 steps out, turns, and parks on the pad.",
+      conditions: [{ robotAt: { x: 2, y: 1 } }],
+    },
   },
 });

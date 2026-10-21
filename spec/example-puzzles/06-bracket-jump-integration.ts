@@ -16,6 +16,12 @@ export default definePuzzle({
   scene: {
     tiles: ["......", ".P....", "......"],
     robotStart: { x: 1, y: 1, facing: "N" },
-    objective: { text: "SCANNER-4 reports clear once sensor 1 reads zero.", conditions: [{ text: "Program parses; the when-condition is well-formed." }] },
+    entities: [
+      { kind: "sensor", index: 1, reads: 0 },
+    ],
+    objective: {
+      text: "SCANNER-4 reports clear once sensor 1 reads zero.",
+      conditions: [{ said: "clear" }],
+    },
   },
 });

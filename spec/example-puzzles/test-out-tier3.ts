@@ -22,8 +22,15 @@ export default definePuzzle({
     "y$ yanks the fixed turn(left) line to the end; paste it over the placeholder X line with Vp, then <C-a> the bay number.",
   ],
   scene: {
-    tiles: ["......", ".P....", "......"],
-    robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "HAULER-7 moves four, grabs the junk, turns twice, opens bay 1.", conditions: [{ text: "Program parses; all five lines match the target exactly." }] },
+    tiles: ["......", ".....B", "......"],
+    robotStart: { x: 0, y: 1, facing: "E" },
+    entities: [
+      { kind: "cargo", name: "junk", x: 4, y: 1 },
+      { kind: "door", name: "bay1", tile: "B", open: false },
+    ],
+    objective: {
+      text: "HAULER-7 moves four, grabs the junk, turns around and opens bay 1.",
+      conditions: [{ holding: "junk" }, { robotFacing: "W" }, { device: { name: "bay1", is: "open" } }],
+    },
   },
 });

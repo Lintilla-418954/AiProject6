@@ -16,6 +16,13 @@ export default definePuzzle({
   scene: {
     tiles: ["......", ".P....", "......"],
     robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "HAULER-7 grabs the crate, not the scrap.", conditions: [{ text: "Program parses; grab() argument is 'crate'." }] },
+    entities: [
+      { kind: "cargo", name: "crate", x: 1, y: 1 },
+      { kind: "cargo", name: "scrap", x: 1, y: 1 },
+    ],
+    objective: {
+      text: "HAULER-7 grabs the crate, not the scrap.",
+      conditions: [{ holding: "crate" }],
+    },
   },
 });

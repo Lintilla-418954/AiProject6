@@ -14,8 +14,16 @@ export default definePuzzle({
   helper: "<C-v> starts a block Visual selection: a rectangle spanning several lines at the same columns. x then cuts that whole block at once, from Grid moves.",
   hints: ["The extra 9 sits at the same column on all three lines. <C-v> then 2j selects that column down through all three; x removes it everywhere in one step."],
   scene: {
-    tiles: ["......", ".P....", "......"],
-    robotStart: { x: 1, y: 1, facing: "E" },
-    objective: { text: "DOCK-1 opens bays 1, 2 and 3 with no stray tokens.", conditions: [{ text: "Program parses; each open() call has a clean single-digit bay number." }] },
+    tiles: ["ABC...", "......", ".P....", "......"],
+    robotStart: { x: 1, y: 2, facing: "E" },
+    entities: [
+      { kind: "door", name: "bay1", tile: "A", open: false },
+      { kind: "door", name: "bay2", tile: "B", open: false },
+      { kind: "door", name: "bay3", tile: "C", open: false },
+    ],
+    objective: {
+      text: "DOCK-1 opens bays 1, 2 and 3.",
+      conditions: [{ device: { name: "bay1", is: "open" } }, { device: { name: "bay2", is: "open" } }, { device: { name: "bay3", is: "open" } }],
+    },
   },
 });
