@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prototype:scene": "vite prototype/scene-binding"
+    "prototype:scene": "vite prototype/scene-binding",
+    "prototype:solver": "node prototype/solver/bench.ts"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
