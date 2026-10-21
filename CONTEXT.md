@@ -41,16 +41,20 @@ _Avoid_: Boss, exam
 ### The World
 
 **Robot Program**:
-The buffer's text: code in the game's own small language that tells the Hero what to do, corrupted at the start of each Puzzle.
+The buffer's text: code in the game's own small language that tells a Robot what to do, corrupted at the start of each Puzzle.
 _Avoid_: Script, spell, source
 
 **Scene**:
-The space station beside the buffer, where the Hero acts out the Robot Program as it changes.
+The space station beside the buffer, where the Robot acts out the Robot Program as it changes.
 _Avoid_: World, map, stage
 
-**Hero**:
-The recurring robot the player controls by repairing its Robot Program.
-_Avoid_: Player, avatar
+**Robot**:
+A station robot the player controls remotely by repairing its Robot Program; each Puzzle has its own.
+_Avoid_: Hero, player, avatar
+
+**Objective**:
+What the Robot must achieve in the Scene for its program to count as working.
+_Avoid_: Task, goal, mission
 
 ### Scoring
 
