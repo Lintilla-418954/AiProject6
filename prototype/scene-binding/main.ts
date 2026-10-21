@@ -2,11 +2,12 @@
 import { Vim } from "./vim";
 import { PUZZLES, Puzzle, simulate, SimResult, World, parseLine } from "./sim";
 
-type VariantKey = "A" | "B" | "C";
+type VariantKey = "A" | "B" | "C" | "D";
 const VARIANTS: Record<VariantKey, string> = {
   A: "Ghost preview: live predicted path, robot runs on solve",
   B: "Mission console: per-line diagnostics, robot replays on every edit",
   C: "Live loop: robot re-runs the program continuously, execution pointer in buffer",
+  D: "A+B mix: ghost preview above the uplink console, no line diagnostics",
 };
 
 const params = new URLSearchParams(location.search);
@@ -238,8 +239,35 @@ function renderC() {
   else draw();
 }
 
+// D: B's layout with A's ghost path; failure is shown only in the world, never against a line.
+function worldOutcome(sim: SimResult): string {
+  const r = sim.failure!.reason;
+  if (r.startsWith("garbled")) return `${g.p.robot} can't parse its program and halts here`;
+  if (r === "task not complete") return `${g.p.robot} stops here, task not done`;
+  return `${g.p.robot} ${r.startsWith("DECOMPRESSION") ? "vents the airlock" : r}`;
+}
+function renderD(runNow: boolean) {
+  app.innerHTML = `<div class="layoutB">
+      <div class="sceneWrap"><canvas id="scene"></canvas><div class="caption" id="cap"></div><div class="sideB">${sidePanel()}</div></div>
+      <div class="console"><div class="ctitle">UPLINK ▸ ${g.p.robot}.prog</div><div class="buf">${bufferHtml({})}</div>${statusline()}</div>
+    </div>`;
+  const cv = document.getElementById("scene") as HTMLCanvasElement;
+  const cap = document.getElementById("cap")!;
+  if (g.solved && runNow) {
+    animate((i) => {
+      const f = g.sim.frames[Math.min(i, g.sim.frames.length - 1)];
+      drawScene(cv, f.world, { flash: i === g.sim.frames.length - 1 ? "#39d98a22" : undefined });
+      cap.textContent = i === g.sim.frames.length - 1 ? "TASK COMPLETE" : `EXECUTING: ${f.event}`;
+    }, g.sim.frames.length, 350, false);
+  } else if (!g.solved) {
+    drawScene(cv, g.p.start, { ghost: g.sim, failAt: failTile(g.sim) });
+    cap.textContent = g.sim.failure ? `PREDICTED: ${worldOutcome(g.sim)}` : "PREDICTED: task completes";
+  }
+}
+
 function render(event: "key" | "init" | "solved" = "key") {
   if (variant === "A") renderA(event === "solved");
+  else if (variant === "D") renderD(event === "solved");
   else if (variant === "B") renderB();
   else {
     if (event !== "key") { if (g.anim.timer) clearInterval(g.anim.timer); g.anim.timer = null; }
