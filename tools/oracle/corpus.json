@@ -1,0 +1,30 @@
+{
+  "profile": "shiftwidth=2 expandtab noignorecase wrapscan nostartofline",
+  "neovim": "0.12",
+  "cases": [
+    {
+      "name": "grid-delete",
+      "start": ["movex(1)"],
+      "cursor": [0, 4],
+      "keys": "x",
+      "target": ["move(1)"],
+      "mode": "normal"
+    },
+    {
+      "name": "insert-argument",
+      "start": ["move()"],
+      "cursor": [0, 5],
+      "keys": "i1<Esc>",
+      "target": ["move(1)"],
+      "mode": "normal"
+    },
+    {
+      "name": "increment",
+      "start": ["move(0)"],
+      "cursor": [0, 5],
+      "keys": "<C-a>",
+      "target": ["move(1)"],
+      "mode": "normal"
+    }
+  ]
+}

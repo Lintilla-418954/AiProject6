@@ -1,0 +1,27 @@
+import { definePuzzle } from "../types.ts";
+
+export default definePuzzle({
+  id: "26-indent-intro",
+  title: "Flat Block",
+  robotName: "HAULER-7",
+  concept: "Indent",
+  role: "introductory",
+  start: ["repeat 3 {", "move(2)", "}"],
+  cursor: { line: 1, col: 0 },
+  target: ["repeat 3 {", "  move(2)", "}"],
+  optimal: ">>",
+  helper:
+    ">> indents the current line one shiftwidth (two spaces, the engine's fixed profile). The Robot Program language requires each line to sit at 2 × its brace depth.",
+  hints: [
+    "The line inside the braces must be indented two spaces to parse. >> does it in one step.",
+    "Trace the cursor route, then apply the named command at the corruption.",
+  ],
+  scene: {
+    tiles: [".......", "......P", "......."],
+    robotStart: { x: 0, y: 1, facing: "E" },
+    objective: {
+      text: "HAULER-7 moves twice, three times over, onto the pad.",
+      conditions: [{ robotAt: { x: 6, y: 1 } }],
+    },
+  },
+});

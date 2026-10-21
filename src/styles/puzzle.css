@@ -1,0 +1,235 @@
+.puzzle-screen {
+  width: min(1100px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 24px 0 64px;
+}
+.puzzle-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.puzzle-nav .nav-link {
+  justify-self: end;
+}
+.puzzle-role {
+  color: var(--text-2);
+  font: 700 10px var(--mono);
+  letter-spacing: 0.15em;
+}
+.scene-layout {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.5fr) minmax(300px, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+.scene-column,
+.brief-panel {
+  border: 1px solid var(--ink-3);
+  background: #091625e8;
+}
+.scene-column {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 330px;
+  padding: 22px;
+}
+.scene-canvas {
+  max-width: 100%;
+  image-rendering: pixelated;
+}
+.scene-caption {
+  width: 100%;
+  min-height: 22px;
+  margin: 14px 0 0;
+  color: var(--text-1);
+  text-align: center;
+  font: 12px var(--mono);
+}
+.scene-caption.success {
+  color: var(--green);
+}
+.brief-panel {
+  padding: 28px;
+}
+.objective-title {
+  margin: 0 0 28px;
+  font-size: 30px;
+  line-height: 1.15;
+}
+.helper-text {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--blue);
+  background: var(--ink-1);
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.hint-action {
+  padding: 10px 14px;
+  background: transparent;
+  color: var(--amber);
+  border-color: #f1be5166;
+}
+.hint-text {
+  color: var(--amber);
+  font: 12px/1.55 var(--mono);
+}
+.nudge {
+  color: var(--red);
+  font: 700 12px var(--mono);
+}
+.uplink-console {
+  position: relative;
+  margin-top: 18px;
+  border: 1px solid var(--ink-3);
+  border-top: 3px solid var(--cyan);
+  background: #081321f5;
+  box-shadow: var(--shadow);
+}
+.console-title {
+  display: inline-block;
+  padding: 5px 12px;
+  background: var(--cyan);
+  color: var(--ink-0);
+  font: 800 11px var(--mono);
+  letter-spacing: 0.08em;
+}
+.vim-buffer {
+  min-height: 230px;
+  padding: 18px 0;
+  font: 15px/1.55 var(--mono);
+  overflow: auto;
+}
+.buffer-line {
+  display: flex;
+  min-height: 24px;
+  white-space: pre;
+}
+.line-number {
+  flex: 0 0 48px;
+  padding-right: 14px;
+  color: #516985;
+  text-align: right;
+  user-select: none;
+}
+.line-content {
+  flex: 1;
+}
+.buffer-cell {
+  display: inline-block;
+  min-width: 9px;
+}
+.normal-cursor {
+  background: var(--text-0);
+  color: var(--ink-0);
+}
+.insert-cursor {
+  box-shadow: inset 2px 0 var(--cyan);
+}
+.command-line {
+  padding: 6px 48px;
+  color: var(--text-0);
+}
+.vim-status {
+  display: grid;
+  grid-template-columns: auto minmax(30px, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 42px;
+  padding: 7px 12px;
+  background: var(--ink-2);
+  font: 12px var(--mono);
+}
+.mode-label {
+  color: var(--cyan);
+  font-weight: 700;
+}
+.pending-keys {
+  color: var(--amber);
+}
+.star-label {
+  color: var(--amber);
+  letter-spacing: 0.12em;
+}
+.budget-meter {
+  position: relative;
+  grid-column: 1 / -1;
+  height: 5px;
+  background: var(--ink-3);
+}
+.budget-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--blue);
+  transition: width 100ms linear;
+}
+.budget-marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 11px;
+  background: var(--amber);
+}
+.lock-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #421e2a;
+  color: #ffb4bf;
+  font: 700 13px var(--mono);
+}
+.lock-message button {
+  padding: 8px 12px;
+  background: var(--red);
+  color: var(--ink-0);
+}
+.completion-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 20px;
+  align-items: center;
+  padding: 24px;
+  border-top: 1px solid #4de2a866;
+  background: #0f2b2b;
+}
+.completion-card .eyebrow {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.completion-title {
+  margin: 0;
+  color: var(--green);
+}
+.optimal-code {
+  grid-column: 1;
+  display: inline-block;
+  width: fit-content;
+  padding: 8px 11px;
+  background: var(--ink-0);
+  color: var(--cyan);
+}
+.completion-card .primary-action {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+}
+@media (max-width: 900px) {
+  .scene-layout {
+    grid-template-columns: 1fr;
+  }
+  .scene-column {
+    min-height: 260px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,22 @@
+:root {
+  color-scheme: dark;
+  --ink-0: #07101d;
+  --ink-1: #0d1929;
+  --ink-2: #14243a;
+  --ink-3: #203653;
+  --text-0: #eff7ff;
+  --text-1: #b9cbe0;
+  --text-2: #7f98b5;
+  --cyan: #31d5f4;
+  --blue: #63b3ff;
+  --green: #4de2a8;
+  --amber: #f1be51;
+  --red: #ff667d;
+  --mono:
+    "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  --radius: 4px;
+  --shadow: 0 22px 70px #0008;
+}
