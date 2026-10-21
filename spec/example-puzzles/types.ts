@@ -1,15 +1,28 @@
 // Shared shape for example Puzzles, per "What does a Puzzle definition contain?" (issue #7).
 export type Role = "introductory" | "integration" | "advanced";
 
-export interface ObjectiveCondition {
-  // declarative: what must be true of the world when the Robot Program finishes
-  text: string;
-}
+export type Facing = "N" | "E" | "S" | "W";
+
+// Final-world conditions; all must hold, plus an implied "finished without failure".
+export type ObjectiveCondition =
+  | { robotAt: { x: number; y: number } }
+  | { robotFacing: Facing }
+  | { cargoAt: { name: string; x: number; y: number } }
+  | { holding: string | "none" }
+  | { device: { name: string; is: "open" | "closed" | number } }
+  | { said: string };
+
+export type Entity =
+  | { kind: "door"; name: string; tile: string; open: boolean; airlock?: string; schedule?: { at: number; open: boolean }[] }
+  | { kind: "device"; name: string; value: number; min: number; max: number }
+  | { kind: "cargo"; name: string; x: number; y: number }
+  | { kind: "sensor"; index: number; reads: number | string };
 
 export interface SceneSpec {
-  tiles: string[]; // ASCII tile map, one row per string
-  robotStart: { x: number; y: number; facing: "N" | "E" | "S" | "W" };
-  entities?: { glyph: string; x: number; y: number; label: string }[];
+  tiles: string[]; // legend: . floor, # hull, P pad, other capitals are door tiles
+  robotStart: { x: number; y: number; facing: Facing };
+  entities?: Entity[];
+  maxLines?: number;
   objective: { text: string; conditions: ObjectiveCondition[] };
 }
 

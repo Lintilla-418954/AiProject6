@@ -56,6 +56,18 @@ _Avoid_: Hero, player, avatar
 What the Robot must achieve in the Scene for its program to count as working.
 _Avoid_: Task, goal, mission
 
+**Tick**:
+One step of Scene time; each Robot action takes one or more Ticks.
+_Avoid_: Turn, frame, step
+
+**Device**:
+A named station fixture, such as a door or pump, that a Robot controls remotely from anywhere in the Scene.
+_Avoid_: Object, machine, prop
+
+**Cargo**:
+A named item lying in the Scene that a Robot can pick up and carry, one at a time.
+_Avoid_: Item, pickup, crate
+
 ### Scoring
 
 **Keystroke Budget**:
