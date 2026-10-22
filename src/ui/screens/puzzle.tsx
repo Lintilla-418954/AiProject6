@@ -8,8 +8,10 @@ import {
   type CSSProperties,
 } from "react";
 import { useAppSnapshot, useAppStore } from "../../app/store-context.tsx";
+import { parsePuzzleId } from "../../content/index.ts";
 import type { PuzzleDef } from "../../content/types.ts";
 import { bindInput, type InputResult } from "../../game/input-adapter.ts";
+import { nextPuzzle } from "../../game/progression.ts";
 import { budgetFor } from "../../game/scoring.ts";
 import {
   createSession,
@@ -28,6 +30,10 @@ export function PuzzleScreen({ puzzle }: { puzzle: PuzzleDef }) {
   const handlerRef = useRef<(input: InputResult) => void>(() => undefined);
   const [animationNonce, setAnimationNonce] = useState(0);
   const session = activeSession?.puzzle.id === puzzle.id ? activeSession : null;
+  const followingPuzzle = session?.solved ? nextPuzzle(puzzle, save) : null;
+  const followingPuzzleId = followingPuzzle
+    ? parsePuzzleId(followingPuzzle.id)
+    : null;
 
   useLayoutEffect(() => {
     store.openPuzzle(puzzle);
@@ -142,14 +148,12 @@ export function PuzzleScreen({ puzzle }: { puzzle: PuzzleDef }) {
     <main className="puzzle-screen">
       <nav className="puzzle-nav grid grid-cols-[1fr_auto_1fr] items-center">
         <Link to="/chapters" className="back-link">
-          ← Chapter map
+          ← Chapters
         </Link>
         <span className="puzzle-role">
           {puzzle.role.replace("-", " ").toUpperCase()}
         </span>
-        <Link to="/settings" className="nav-link justify-self-end">
-          Settings
-        </Link>
+        <span aria-hidden="true" />
       </nav>
       <section className="scene-layout grid items-stretch gap-6">
         <div className="scene-column grid place-items-center">
@@ -217,11 +221,24 @@ export function PuzzleScreen({ puzzle }: { puzzle: PuzzleDef }) {
               {"★".repeat(session.stars)}
               {"☆".repeat(3 - session.stars)} Repair complete
             </h2>
-            <p>{session.keystrokes} keystrokes · Optimal Solution</p>
-            <code className="optimal-code">{puzzle.optimal}</code>
-            <Link to="/chapters" className="primary-action">
-              Return to Chapter map
-            </Link>
+            <div className="optimal-solution">
+              <span>Optimal Solution</span>
+              <code className="optimal-code">{puzzle.optimal}</code>
+            </div>
+            <div className="completion-actions">
+              {followingPuzzle && followingPuzzleId ? (
+                <Link
+                  to="/puzzle/$puzzleId"
+                  params={{ puzzleId: followingPuzzleId }}
+                  className="primary-action"
+                >
+                  Next Uplink
+                </Link>
+              ) : null}
+              <Link to="/chapters" className="secondary-action">
+                Return to Chapters
+              </Link>
+            </div>
           </div>
         ) : null}
       </section>

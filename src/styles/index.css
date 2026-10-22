@@ -2,4 +2,5 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "./tokens.css";
 @import "./app.css";
+@import "./home.css";
 @import "./puzzle.css";
