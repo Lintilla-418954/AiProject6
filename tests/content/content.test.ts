@@ -26,6 +26,10 @@ const dockingRegular = dockingRingPuzzles.filter(
     { role: "introductory" | "integration" | "advanced" }
   > => puzzle.role !== "test-out",
 );
+const dockingTestOut = puzzles.find(
+  (puzzle): puzzle is Extract<PuzzleDef, { role: "test-out" }> =>
+    puzzle.role === "test-out" && puzzle.id === "test-out-docking-ring",
+)!;
 
 const traceAliases: Readonly<Record<string, readonly string[]>> = {
   count: [],
@@ -164,6 +168,66 @@ describe("Docking Ring progression", () => {
         ),
       ).toBe(false);
     }
+  });
+});
+
+describe("Docking Ring Test-Out", () => {
+  it("is harder than the average Advanced Puzzle and covers every Chapter Concept", () => {
+    const tokens = parseKeys(dockingTestOut.optimal);
+    const result = run(
+      initialState(dockingTestOut.start, dockingTestOut.cursor),
+      tokens,
+    );
+    const advanced = regularPuzzles.filter(
+      (puzzle) => puzzle.role === "advanced",
+    );
+    const advancedAverage =
+      advanced.reduce(
+        (total, puzzle) => total + parseKeys(puzzle.optimal).length,
+        0,
+      ) / advanced.length;
+    const chapterConcepts = concepts.filter(
+      (concept) => concept.chapterId === dockingTestOut.chapter,
+    );
+
+    expect(tokens.length).toBeGreaterThanOrEqual(18);
+    expect(tokens.length).toBeGreaterThan(advancedAverage);
+    expect(isSolved(result.state, dockingTestOut.target)).toBe(true);
+    expect(
+      traceBelongsToToolkit(
+        result.trace,
+        toolkitFor(chapterConcepts.at(-1)!.id),
+      ),
+    ).toBe(true);
+    for (const concept of chapterConcepts)
+      expect(
+        result.trace.some((command) => concept.commands.includes(command)),
+      ).toBe(true);
+    for (let length = 0; length < tokens.length; length++)
+      expect(
+        isSolved(
+          run(
+            initialState(dockingTestOut.start, dockingTestOut.cursor),
+            tokens.slice(0, length),
+          ).state,
+          dockingTestOut.target,
+        ),
+      ).toBe(false);
+  });
+
+  it("runs a complex repaired Program without giving Test-Out guidance", () => {
+    const start = simulate(dockingTestOut.scene, dockingTestOut.start);
+    const target = simulate(dockingTestOut.scene, dockingTestOut.target);
+    const optimalLength = parseKeys(dockingTestOut.optimal).length;
+
+    expect(start.success).toBe(false);
+    expect(target.success).toBe(true);
+    expect(target.failure).toBeNull();
+    expect(target.frames.length - 1).toBeGreaterThanOrEqual(7);
+    expect(dockingTestOut.helper).toBe("");
+    expect(dockingTestOut.hints).toEqual([]);
+    expect(optimalLength).toBeLessThanOrEqual(dockingTestOut.budget.two);
+    expect(dockingTestOut.budget.two).toBeLessThan(dockingTestOut.budget.pass);
   });
 });
 
