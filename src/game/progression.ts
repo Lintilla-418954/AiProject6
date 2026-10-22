@@ -8,11 +8,7 @@ export function chapterUnlocked(chapterId: string, save: SaveV1): boolean {
   const index = chapters.findIndex((chapter) => chapter.id === chapterId);
   if (index <= 0) return index === 0;
   const previous = chapters[index - 1]!;
-  if (save.passedTestOuts.includes(previous.id)) return true;
-  const regular = puzzlesForChapter(previous.id).filter(
-    (puzzle) => puzzle.role !== "test-out",
-  );
-  return regular.every((puzzle) => Boolean(save.puzzleResults[puzzle.id]));
+  return save.passedTestOuts.includes(previous.id);
 }
 
 export function puzzleUnlocked(puzzle: PuzzleDef, save: SaveV1): boolean {

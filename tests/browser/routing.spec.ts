@@ -6,7 +6,7 @@ test.describe("application routing", () => {
   test("loads and refreshes every named route", async ({ page }) => {
     for (const [path, heading] of [
       ["#/", /Repair the station/],
-      ["#/chapters", "Repair route"],
+      ["#/chapters", "Chapters"],
       ["#/settings", "Settings"],
       [puzzlePath, /HAULER-7 steps out/],
     ] as const) {
@@ -35,14 +35,15 @@ test.describe("application routing", () => {
     page,
   }) => {
     await page.goto("/#/");
-    await page.getByRole("link", { name: "Open Chapter map" }).click();
+    await page.getByRole("link", { name: "Open Chapter Menu" }).click();
     await page.locator(".puzzle-chip").first().click();
     await page.keyboard.press("j");
     await expect(page.locator(".key-count")).toHaveText("1 / 11 keys");
 
+    await page.getByRole("link", { name: "Chapters" }).click();
     await page.getByRole("link", { name: "Settings" }).click();
     await page.goBack();
-    await expect(page.locator(".key-count")).toHaveText("1 / 11 keys");
+    await expect(page.getByRole("heading", { name: "Chapters" })).toBeVisible();
     await page.goForward();
     await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
     expect(new URL(page.url()).hash).toBe("#/settings");
@@ -50,7 +51,7 @@ test.describe("application routing", () => {
 
   test("stops puzzle input after navigation", async ({ page }) => {
     await page.goto(`/${puzzlePath}`);
-    await page.getByRole("link", { name: "Settings" }).click();
+    await page.getByRole("link", { name: "Chapters" }).click();
     await page.keyboard.press("j");
     await page.goBack();
     await expect(page.locator(".key-count")).toHaveText("0 / 11 keys");

@@ -14,10 +14,9 @@ export function SettingsScreen() {
 
   return (
     <main className="settings-screen">
-      <Link to="/" className="back-link">
-        ← Station
+      <Link to="/chapters" className="back-link">
+        ← Chapters
       </Link>
-      <p className="eyebrow">LOCAL SYSTEMS</p>
       <h1 className="screen-title">Settings</h1>
       <div className="settings-panel">
         <Toggle
