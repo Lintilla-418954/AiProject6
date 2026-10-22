@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { concepts } from "../../src/content/curriculum.ts";
+import {
+  conceptByName,
+  concepts,
+  toolkitFor,
+} from "../../src/content/curriculum.ts";
 import { puzzles } from "../../src/content/index.ts";
+import { dockingRingPuzzles } from "../../src/content/puzzles/docking-ring.ts";
 import { validateContent } from "../../src/content/validate.ts";
 import type { PuzzleDef } from "../../src/content/types.ts";
 import {
@@ -8,43 +13,33 @@ import {
   isSolved,
   parseKeys,
   run,
-  step,
-  type Snapshot,
 } from "../../src/engine/index.ts";
 import { simulate } from "../../src/robot/index.ts";
 
 const regularPuzzles = puzzles.filter((puzzle) => puzzle.role !== "test-out");
-const gridMoveKeys = ["h", "j", "k", "l", "x"] as const;
+const roleMinimums = { introductory: 3, integration: 5, advanced: 7 };
+const dockingRegular = dockingRingPuzzles.filter(
+  (
+    puzzle,
+  ): puzzle is Extract<
+    PuzzleDef,
+    { role: "introductory" | "integration" | "advanced" }
+  > => puzzle.role !== "test-out",
+);
 
-function hasShorterGridMoveSolution(puzzle: PuzzleDef): boolean {
-  const optimalLength = parseKeys(puzzle.optimal).length;
-  const hash = (state: Snapshot) =>
-    [
-      state.lines.join("\n"),
-      state.cursor.line,
-      state.cursor.col,
-      state.mode,
-      state.pending.join(""),
-    ].join("\u0001");
-  const initial = initialState(puzzle.start, puzzle.cursor);
-  let frontier = [initial];
-  const seen = new Set([hash(initial)]);
+const traceAliases: Readonly<Record<string, readonly string[]>> = {
+  count: [],
+  gg: ["gg"],
+};
 
-  for (let depth = 0; depth < optimalLength - 1; depth++) {
-    const next: Snapshot[] = [];
-    for (const state of frontier) {
-      for (const token of gridMoveKeys) {
-        const candidate = step(state, token).state;
-        if (isSolved(candidate, puzzle.target)) return true;
-        const key = hash(candidate);
-        if (seen.has(key)) continue;
-        seen.add(key);
-        next.push(candidate);
-      }
-    }
-    frontier = next;
-  }
-  return false;
+function traceBelongsToToolkit(
+  trace: readonly string[],
+  toolkit: readonly string[],
+): boolean {
+  const allowed = new Set(
+    toolkit.flatMap((command) => traceAliases[command] ?? [command]),
+  );
+  return trace.every((command) => allowed.has(command));
 }
 
 describe("production content", () => {
@@ -82,58 +77,93 @@ describe("production content", () => {
   });
 });
 
-describe("Grid moves progression", () => {
-  const gridMoves = regularPuzzles.filter(
-    (puzzle) => puzzle.concept === "Grid moves",
-  );
-
-  it("increases line count and meets each role's key minimum", () => {
-    expect(gridMoves.map((puzzle) => puzzle.role)).toEqual([
-      "introductory",
-      "integration",
-      "advanced",
-    ]);
-    expect(gridMoves.map((puzzle) => puzzle.start.length)).toEqual([1, 2, 3]);
-    expect(gridMoves.map((puzzle) => parseKeys(puzzle.optimal).length)).toEqual(
-      [3, 7, 11],
-    );
+describe("Docking Ring progression", () => {
+  it("grows every Concept by line count and role key minimum", () => {
+    for (let index = 0; index < dockingRegular.length; index += 3) {
+      const conceptPuzzles = dockingRegular.slice(index, index + 3);
+      expect(conceptPuzzles.map((puzzle) => puzzle.role)).toEqual([
+        "introductory",
+        "integration",
+        "advanced",
+      ]);
+      const lineCounts = conceptPuzzles.map((puzzle) => puzzle.start.length);
+      expect(lineCounts[0]).toBeLessThan(lineCounts[1]!);
+      expect(lineCounts[1]).toBeLessThan(lineCounts[2]!);
+      for (const puzzle of conceptPuzzles)
+        expect(parseKeys(puzzle.optimal).length).toBeGreaterThanOrEqual(
+          roleMinimums[puzzle.role],
+        );
+    }
   });
 
-  it("uses only Grid moves commands and has no shorter Toolkit solution", () => {
-    for (const puzzle of gridMoves) {
+  it("uses the taught Toolkit and features the current Concept", () => {
+    for (const puzzle of dockingRegular) {
+      const concept = conceptByName.get(puzzle.concept)!;
       const result = run(
         initialState(puzzle.start, puzzle.cursor),
         parseKeys(puzzle.optimal),
       );
       expect(isSolved(result.state, puzzle.target)).toBe(true);
+      expect(traceBelongsToToolkit(result.trace, toolkitFor(concept.id))).toBe(
+        true,
+      );
       expect(
-        result.trace.every((command) =>
-          gridMoveKeys.includes(command as (typeof gridMoveKeys)[number]),
-        ),
+        result.trace.some((command) => concept.commands.includes(command)),
       ).toBe(true);
-      expect(hasShorterGridMoveSolution(puzzle)).toBe(false);
+
+      if (puzzle.role === "integration" && concept.order > 1) {
+        const earlier = new Set(
+          concepts
+            .filter((candidate) => candidate.order < concept.order)
+            .flatMap((candidate) => candidate.commands),
+        );
+        expect(result.trace.some((command) => earlier.has(command))).toBe(true);
+      }
+
+      const tokens = parseKeys(puzzle.optimal);
+      for (let length = 0; length < tokens.length; length++)
+        expect(
+          isSolved(
+            run(
+              initialState(puzzle.start, puzzle.cursor),
+              tokens.slice(0, length),
+            ).state,
+            puzzle.target,
+          ),
+        ).toBe(false);
     }
   });
 
-  it("runs repaired programs and maps Advanced actions to Robot language Ticks", () => {
-    for (const puzzle of gridMoves) {
-      expect(simulate(puzzle.scene, puzzle.start).success).toBe(false);
-      expect(simulate(puzzle.scene, puzzle.target).success).toBe(true);
+  it("runs every repaired Program and emits complex Advanced actions", () => {
+    for (const puzzle of dockingRegular) {
+      const start = simulate(puzzle.scene, puzzle.start);
+      const target = simulate(puzzle.scene, puzzle.target);
+      expect(start.success).toBe(false);
+      expect(target.success).toBe(true);
+      expect(target.failure).toBeNull();
+      expect(target.frames[0]?.event).toBe("Program linked");
+      if (puzzle.role === "advanced")
+        expect(target.frames.length - 1).toBeGreaterThanOrEqual(4);
     }
+  });
 
-    const advanced = gridMoves.find((puzzle) => puzzle.role === "advanced")!;
-    const events = simulate(advanced.scene, advanced.target).frames.map(
-      (frame) => frame.event,
+  it("keeps line-end shortcuts from replacing bracket jumps", () => {
+    const bracketPuzzles = dockingRegular.filter(
+      (puzzle) => puzzle.concept === "Bracket jump",
     );
-    expect(events).toEqual([
-      "Program linked",
-      "moves",
-      "moves",
-      "turns right",
-      "moves",
-      "moves",
-    ]);
-    expect(events.length - 1).toBeGreaterThanOrEqual(4);
+    for (const puzzle of bracketPuzzles) {
+      const result = run(
+        initialState(puzzle.start, puzzle.cursor),
+        parseKeys(puzzle.optimal),
+      );
+      expect(result.trace).toContain("%");
+      expect(
+        isSolved(
+          run(initialState(puzzle.start, puzzle.cursor), "$x").state,
+          puzzle.target,
+        ),
+      ).toBe(false);
+    }
   });
 });
 

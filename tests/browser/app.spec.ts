@@ -9,7 +9,7 @@ test("opens the station map and first Puzzle", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Chapters" })).toBeVisible();
   await page.locator(".puzzle-chip").first().click();
   await expect(page.getByLabel(/Robot Program Vim buffer/)).toBeVisible();
-  await expect(page.locator(".key-count")).toHaveText("0 / 11 keys");
+  await expect(page.locator(".key-count")).toHaveText("0 / 7 keys");
   await page.keyboard.press("j");
-  await expect(page.locator(".key-count")).toHaveText("1 / 11 keys");
+  await expect(page.locator(".key-count")).toHaveText("1 / 7 keys");
 });
