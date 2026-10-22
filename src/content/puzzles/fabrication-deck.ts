@@ -84,8 +84,7 @@ export const fabricationDeckPuzzles = [
         "Move to the end of the line, then insert the missing value before the closing parenthesis.",
       hints: [
         "The cursor should end at the final parenthesis.",
-        "$ moves there, then h gets to the space before the missing number.",
-        "Use i to insert 4 after the space and hit <Esc> to finish.",
+        "Use $ to move there, then i to insert 4 before the closing parenthesis.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -389,3 +388,4 @@ export const fabricationDeckPuzzles = [
     },
   }),
 ];
+
