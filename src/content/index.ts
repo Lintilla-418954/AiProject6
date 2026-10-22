@@ -80,6 +80,12 @@ export const puzzles: readonly PuzzleDef[] = [
 
 export const puzzleById = new Map(puzzles.map((puzzle) => [puzzle.id, puzzle]));
 
+export type PuzzleId = string & { readonly __puzzleId: unique symbol };
+
+export function parsePuzzleId(value: string): PuzzleId | null {
+  return puzzleById.has(value) ? (value as PuzzleId) : null;
+}
+
 export function puzzlesForChapter(chapterId: string): readonly PuzzleDef[] {
   const conceptNames = new Set(
     concepts
