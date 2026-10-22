@@ -10,9 +10,9 @@ export const dockingRingPuzzles = [
       target: ["move(2)"],
       optimal: "llx",
       helper:
-        "h j k l move one cell at a time; x removes the character under the cursor.",
+        "Use h to move left, j to move down, k to move up, l to move right and x to remove",
       hints: [
-        "The extra x is near the start of the line.",
+        "You need to move right and then remove the x that is in the way",
         "Move right until the cursor reaches x, then cut it.",
       ],
       scene: routeScene(robot, 2, "SCOUT-3 reaches the docking beacon."),
@@ -36,7 +36,7 @@ export const dockingRingPuzzles = [
       target: ["move(2)", "turn(right)", "move(2)"],
       optimal: "jjlxkllxklx",
       helper:
-        "Plan a route with h j k l that reaches faults across several lines, then remove each one with x.",
+        "Plan a route with hjkl and use x to fix the faulty lines in the code",
       hints: [
         "The three faults occupy different columns.",
         "Start with the lower fault, then work upward through the remaining lines.",
