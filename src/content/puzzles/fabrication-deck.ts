@@ -24,8 +24,8 @@ export const fabricationDeckPuzzles = [
       helper:
         "Seek a character, then use a counted replacement to overwrite a fixed-width word.",
       hints: [
-        "Find the r that starts right.",
-        "Use fr, then 5r followed by the letters of left is not valid; replace the word by changing it.",
+        "The word is uppercase and needs lowercase.",
+        "Move to the L with l, then press 4~ to toggle the whole word.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
