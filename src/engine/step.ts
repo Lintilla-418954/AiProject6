@@ -18,10 +18,12 @@ export interface StepResult {
 
 interface ParsedCommand {
   count: number;
+  countExplicit: boolean;
   command: string;
   argument?: string;
   operator?: Operator;
   operatorCount?: number;
+  operatorCountExplicit?: boolean;
 }
 
 const MOTIONS = new Set([
@@ -42,6 +44,7 @@ const MOTIONS = new Set([
   "{",
   "}",
   "%",
+  "gg",
 ]);
 const ARG_MOTIONS = new Set(["f", "t", "F", "T"]);
 const SIMPLE = new Set([
@@ -83,17 +86,16 @@ function parsePending(
       digits += tokens[index++]!;
     return digits ? Number(digits) : 0;
   };
-  const count = readCount() || 1;
+  const parsedCount = readCount();
+  const count = parsedCount || 1;
+  const countExplicit = parsedCount !== 0;
   if (index >= tokens.length) return "incomplete";
   let command = tokens[index++]!;
-  if (command === "g") {
-    if (index >= tokens.length) return "incomplete";
-    if (tokens[index++] !== "g") return "invalid";
-    command = "gg";
-  }
   if (["d", "c", "y", ">", "<", "="].includes(command)) {
     const operator = command as Operator;
-    const operatorCount = readCount() || 1;
+    const parsedOperatorCount = readCount();
+    const operatorCount = parsedOperatorCount || 1;
+    const operatorCountExplicit = parsedOperatorCount !== 0;
     if (index >= tokens.length) return "incomplete";
     let motion = tokens[index++]!;
     if (
@@ -102,7 +104,14 @@ function parsePending(
         motion === operator)
     ) {
       return index === tokens.length
-        ? { count, command: "line", operator, operatorCount }
+        ? {
+            count,
+            countExplicit,
+            command: "line",
+            operator,
+            operatorCount,
+            operatorCountExplicit,
+          }
         : "invalid";
     }
     if (motion === "g") {
@@ -116,10 +125,12 @@ function parsePending(
       return index === tokens.length
         ? {
             count,
+            countExplicit,
             command: `object-${motion}`,
             argument,
             operator,
             operatorCount,
+            operatorCountExplicit,
           }
         : "invalid";
     }
@@ -127,24 +138,50 @@ function parsePending(
       if (index >= tokens.length) return "incomplete";
       const argument = tokens[index++]!;
       return index === tokens.length
-        ? { count, command: motion, argument, operator, operatorCount }
+        ? {
+            count,
+            countExplicit,
+            command: motion,
+            argument,
+            operator,
+            operatorCount,
+            operatorCountExplicit,
+          }
         : "invalid";
     }
     return MOTIONS.has(motion) && index === tokens.length
-      ? { count, command: motion, operator, operatorCount }
+      ? {
+          count,
+          countExplicit,
+          command: motion,
+          operator,
+          operatorCount,
+          operatorCountExplicit,
+        }
       : "invalid";
   }
+  if (command === "g") {
+    if (index >= tokens.length) return "incomplete";
+    if (tokens[index++] !== "g") return "invalid";
+    command = "gg";
+  }
   if (command === ";" || command === ",")
-    return index === tokens.length ? { count, command } : "invalid";
+    return index === tokens.length
+      ? { count, countExplicit, command }
+      : "invalid";
   if (ARG_MOTIONS.has(command) || command === "r") {
     if (index >= tokens.length) return "incomplete";
     const argument = tokens[index++]!;
-    return index === tokens.length ? { count, command, argument } : "invalid";
+    return index === tokens.length
+      ? { count, countExplicit, command, argument }
+      : "invalid";
   }
   if (command === '"' || command === "q" || command === "@") {
     if (index >= tokens.length) return "incomplete";
     const argument = tokens[index++]!;
-    return index === tokens.length ? { count, command, argument } : "invalid";
+    return index === tokens.length
+      ? { count, countExplicit, command, argument }
+      : "invalid";
   }
   if (command === "[") return "invalid";
   if (
@@ -160,11 +197,13 @@ function parsePending(
     command === "n" ||
     command === "N"
   ) {
-    return index === tokens.length ? { count, command } : "invalid";
+    return index === tokens.length
+      ? { count, countExplicit, command }
+      : "invalid";
   }
   return (SIMPLE.has(command) || MOTIONS.has(command) || command === "gg") &&
     index === tokens.length
-    ? { count, command }
+    ? { count, countExplicit, command }
     : "invalid";
 }
 
@@ -354,29 +393,41 @@ function findPattern(
 function motionRange(
   state: Snapshot,
   motion: MotionResult,
-  operator: Operator,
+  command: string,
+  count = 1,
 ): TextRange {
-  if (
-    motion.linewise &&
-    ["j", "k", "gg", "G"].includes(state.pending.at(-1) ?? "")
-  ) {
+  if (motion.linewise && ["j", "k", "gg", "G"].includes(command)) {
     return {
       start: { line: state.cursor.line, col: 0 },
       end: { line: motion.line, col: 0 },
       linewise: true,
     };
   }
-  let endCol = motion.col + (motion.inclusive ? 1 : 0);
-  if (
-    operator === "c" &&
-    state.pending.at(-1) === "w" &&
-    motion.line === state.cursor.line
-  )
-    endCol = Math.max(state.cursor.col + 1, endCol);
-  return {
-    start: { line: state.cursor.line, col: state.cursor.col },
-    end: { line: motion.line, col: endCol },
+  let target = motion.operatorEnd ?? {
+    line: motion.line,
+    col: motion.col + (motion.inclusive ? 1 : 0),
   };
+  if (
+    command === "cw" &&
+    !/\s/.test(state.lines[state.cursor.line]![state.cursor.col] ?? "")
+  ) {
+    const end = applyMotion(state, "e", count);
+    if (end) target = { line: end.line, col: end.col + 1 };
+  }
+  const origin = { line: state.cursor.line, col: state.cursor.col };
+  const backward =
+    motion.line < origin.line ||
+    (motion.line === origin.line && motion.col < origin.col);
+  if (backward) {
+    return {
+      start: { line: motion.line, col: motion.col },
+      end: {
+        line: origin.line,
+        col: origin.col + (motion.inclusive ? 1 : 0),
+      },
+    };
+  }
+  return { start: origin, end: target };
 }
 
 function updateNumber(
@@ -503,7 +554,14 @@ function normalStep(
   if (parsed === "incomplete")
     return { state: { ...state, pending }, bell: false, trace: [] };
   if (parsed === "invalid") return fail(state);
-  const { count, command, argument, operator, operatorCount = 1 } = parsed;
+  const {
+    count,
+    countExplicit,
+    command,
+    argument,
+    operator,
+    operatorCount = 1,
+  } = parsed;
   const working = { ...state, pending };
 
   if (command === '"' && argument)
@@ -574,12 +632,23 @@ function normalStep(
         ],
       };
     }
-    const motion = applyMotion(state, command, count * operatorCount, argument);
+    const motion = applyMotion(
+      state,
+      command,
+      count * operatorCount,
+      argument,
+      countExplicit || parsed.operatorCountExplicit === true,
+    );
     if (!motion) return fail(state);
     const next = applyOperator(
       working,
       operator,
-      motionRange(working, motion, operator),
+      motionRange(
+        working,
+        motion,
+        operator === "c" ? `c${command}` : command,
+        count * operatorCount,
+      ),
     );
     return {
       state: next,
@@ -588,7 +657,7 @@ function normalStep(
     };
   }
 
-  let motion = applyMotion(state, command, count, argument);
+  let motion = applyMotion(state, command, count, argument, countExplicit);
   if ((command === ";" || command === ",") && state.lastFind) {
     const reversed = command === ",";
     const direction = reversed
@@ -610,7 +679,7 @@ function normalStep(
       cursor: {
         line: motion.line,
         col: motion.col,
-        desiredCol: ["j", "k"].includes(command)
+        desiredCol: ["j", "k", "gg", "G"].includes(command)
           ? state.cursor.desiredCol
           : motion.col,
       },
@@ -705,13 +774,13 @@ function normalStep(
     case "D":
     case "C": {
       const operatorType = command === "D" ? "d" : "c";
-      const next = applyOperator(state, operatorType, {
-        start: { line: state.cursor.line, col: state.cursor.col },
-        end: {
-          line: state.cursor.line,
-          col: state.lines[state.cursor.line]!.length,
-        },
-      });
+      const motion = applyMotion(state, "$", count);
+      if (!motion) return fail(state);
+      const next = applyOperator(
+        state,
+        operatorType,
+        motionRange(state, motion, "$"),
+      );
       return { state: next, bell: false, trace: [command] };
     }
     case "s":
@@ -720,7 +789,13 @@ function normalStep(
         command === "S"
           ? {
               start: { line: state.cursor.line, col: 0 },
-              end: { line: state.cursor.line, col: 0 },
+              end: {
+                line: Math.min(
+                  state.lines.length - 1,
+                  state.cursor.line + count - 1,
+                ),
+                col: 0,
+              },
               linewise: true,
             }
           : {
@@ -782,10 +857,11 @@ function normalStep(
       };
     }
     case "J": {
-      if (state.cursor.line + count >= state.lines.length) return fail(state);
+      const joins = Math.max(1, count - 1);
+      if (state.cursor.line + joins >= state.lines.length) return fail(state);
       const lines = [...state.lines];
       let cursor = state.cursor.col;
-      for (let iteration = 0; iteration < count; iteration++) {
+      for (let iteration = 0; iteration < joins; iteration++) {
         const left = lines[state.cursor.line]!.replace(/\s+$/, "");
         const right = lines[state.cursor.line + 1]!.replace(/^\s+/, "");
         cursor = left.length;

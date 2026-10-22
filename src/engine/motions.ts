@@ -5,6 +5,7 @@ export interface MotionResult {
   col: number;
   inclusive: boolean;
   linewise?: boolean;
+  operatorEnd?: { line: number; col: number };
 }
 
 const wordClass = (char: string | undefined, big: boolean): number => {
@@ -37,20 +38,30 @@ function wordForward(
   state: Snapshot,
   big: boolean,
   count: number,
-): [number, number] {
+): [number, number, boolean] {
   let { line, col } = state.cursor;
+  let landedOnBoundary = false;
   for (let iteration = 0; iteration < count; iteration++) {
+    landedOnBoundary = false;
     let currentClass = wordClass(state.lines[line]![col], big);
     let next = nextPosition(state.lines, line, col);
     while (next) {
+      const crossedLine = next[0] !== line;
       [line, col] = next;
       const nextClass = wordClass(state.lines[line]![col], big);
+      if (crossedLine && (nextClass !== 0 || state.lines[line]!.length === 0)) {
+        landedOnBoundary = true;
+        break;
+      }
       if (currentClass !== 0 && nextClass !== currentClass) currentClass = 0;
-      if (currentClass === 0 && nextClass !== 0) break;
+      if (currentClass === 0 && nextClass !== 0) {
+        landedOnBoundary = true;
+        break;
+      }
       next = nextPosition(state.lines, line, col);
     }
   }
-  return [line, col];
+  return [line, col, landedOnBoundary];
 }
 
 function wordBackward(
@@ -97,7 +108,11 @@ function wordEnd(
     [line, col] = next;
     const selected = wordClass(state.lines[line]![col], big);
     while ((next = nextPosition(state.lines, line, col))) {
-      if (wordClass(state.lines[next[0]]![next[1]], big) !== selected) break;
+      if (
+        next[0] !== line ||
+        wordClass(state.lines[next[0]]![next[1]], big) !== selected
+      )
+        break;
       [line, col] = next;
     }
   }
@@ -172,6 +187,7 @@ export function applyMotion(
   command: string,
   count = 1,
   argument?: string,
+  countExplicit = false,
 ): MotionResult | null {
   const { line, col, desiredCol } = state.cursor;
   const current = state.lines[line]!;
@@ -214,26 +230,31 @@ export function applyMotion(
       return { line, col: 0, inclusive: false };
     case "^":
       return { line, col: firstNonBlank(current), inclusive: false };
-    case "$":
-      return { line, col: Math.max(0, current.length - 1), inclusive: true };
+    case "$": {
+      const target = Math.min(state.lines.length - 1, line + count - 1);
+      return {
+        line: target,
+        col: Math.max(0, state.lines[target]!.length - 1),
+        inclusive: true,
+      };
+    }
     case "gg": {
       const target =
         count > 1 ? Math.min(state.lines.length - 1, count - 1) : 0;
       return {
         line: target,
-        col: firstNonBlank(state.lines[target]!),
+        col: normalCol(state.lines[target]!, desiredCol),
         inclusive: false,
         linewise: true,
       };
     }
     case "G": {
-      const target =
-        count > 1
-          ? Math.min(state.lines.length - 1, count - 1)
-          : state.lines.length - 1;
+      const target = countExplicit
+        ? Math.min(state.lines.length - 1, count - 1)
+        : state.lines.length - 1;
       return {
         line: target,
-        col: firstNonBlank(state.lines[target]!),
+        col: normalCol(state.lines[target]!, desiredCol),
         inclusive: false,
         linewise: true,
       };
@@ -248,12 +269,31 @@ export function applyMotion(
     }
     case "w":
     case "W": {
-      const [targetLine, targetCol] = wordForward(
+      const [targetLine, targetCol, landedOnBoundary] = wordForward(
         state,
         command === "W",
         count,
       );
-      return { line: targetLine, col: targetCol, inclusive: false };
+      const atBufferEnd =
+        !landedOnBoundary &&
+        targetLine === state.lines.length - 1 &&
+        targetCol === state.lines[targetLine]!.length - 1;
+      const crossedLine = targetLine > state.cursor.line;
+      const crossedSingleBoundary =
+        crossedLine && count === 1 && landedOnBoundary;
+      return {
+        line: targetLine,
+        col: targetCol,
+        inclusive: false,
+        operatorEnd: atBufferEnd
+          ? { line: targetLine, col: targetCol + 1 }
+          : crossedSingleBoundary
+            ? {
+                line: state.cursor.line,
+                col: state.lines[state.cursor.line]!.length,
+              }
+            : undefined,
+      };
     }
     case "b":
     case "B": {
