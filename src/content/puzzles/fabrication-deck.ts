@@ -109,7 +109,7 @@ export const fabricationDeckPuzzles = [
         "Fix the first one at the cursor, then use j$ to land at the end of the next line and insert the remaining values.",
       ],
       scene: {
-        tiles: ["....", "....", ".P..", "...."],
+        tiles: ["....", "....", "....", "..P."],
         robotStart: { x: 1, y: 1, facing: "E" },
         objective: {
           text: "PATCH-5 completes the assembly route.",
