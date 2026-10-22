@@ -11,8 +11,11 @@ export const fabricationDeckPuzzles = [
       target: ["wait(2)"],
       optimal: "r2",
       helper:
-        "r{char} replaces the character under the cursor without entering Insert mode.",
-      hints: ["The cursor is on the wrong digit.", "Press r followed by 2."],
+        "r replaces the character under the cursor without leaving Normal mode, so it is the right tool for a single-digit fix.",
+      hints: [
+        "The wrong value is the 9 in wait(9).",
+        "Move to the 9 and press r followed by 2.",
+      ],
       scene: routeScene(robot, 2, "PATCH-5 reaches the fabrication press."),
     },
     integration: {
@@ -22,10 +25,10 @@ export const fabricationDeckPuzzles = [
       target: ["turn(left)"],
       optimal: "l4~",
       helper:
-        "Seek a character, then use a counted replacement to overwrite a fixed-width word.",
+        "Move to the uppercase letter, then use a counted case toggle to rewrite the whole word in one action.",
       hints: [
-        "The word is uppercase and needs lowercase.",
-        "Move to the L with l, then press 4~ to toggle the whole word.",
+        "The word is TURN and must become lowercase.",
+        "Move to the L with l, then press 4~ to toggle the word.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -42,10 +45,10 @@ export const fabricationDeckPuzzles = [
       target: ["move(1)", "turn(left)", "move(2)"],
       optimal: "~j0~j0~",
       helper:
-        "~ toggles the case under the cursor; line and edge motions coordinate repeated repairs.",
+        "~ toggles the case under the cursor, so you can fix each initial letter while moving down the file.",
       hints: [
-        "Only the first letter of each verb has wrong case.",
-        "Toggle it, then use j0 for each later line.",
+        "Each verb starts with the wrong case.",
+        "Toggle the first letter on each line, then move with j0 to the next start.",
       ],
       scene: {
         tiles: ["....", "...P", "....", "...."],
@@ -65,10 +68,10 @@ export const fabricationDeckPuzzles = [
       target: ["move(2)"],
       optimal: "i2<Esc>",
       helper:
-        "i enters Insert mode before the cursor; <Esc> returns to Normal mode.",
+        "i enters Insert mode before the cursor, and <Esc> exits back to Normal mode when the edit is done.",
       hints: [
-        "The cursor is on the closing parenthesis.",
-        "Use i, type 2, then press <Esc>.",
+        "The cursor is sitting right before the closing parenthesis.",
+        "Press i, type 2, then press <Esc>.",
       ],
       scene: routeScene(robot, 2, "PATCH-5 reaches the parts rack."),
     },
@@ -78,10 +81,11 @@ export const fabricationDeckPuzzles = [
       target: ["set(press, 4)"],
       optimal: "$i4<Esc>",
       helper:
-        "Move near the line end, then insert the missing value before the closing parenthesis.",
+        "Move to the end of the line, then insert the missing value before the closing parenthesis.",
       hints: [
-        "$ reaches the closing parenthesis; h moves to the space.",
-        "Use i to insert 4 after the space, then escape.",
+        "The cursor should end at the final parenthesis.",
+        "$ moves there, then h gets to the space before the missing number.",
+        "Use i to insert 4 after the space and hit <Esc> to finish.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -100,10 +104,10 @@ export const fabricationDeckPuzzles = [
       target: ["move(1)", "turn(right)", "move(2)"],
       optimal: "i1<Esc>j$iright<Esc>j$i2<Esc>",
       helper:
-        "Insert mode composes with vertical and line-end movement across a program.",
+        "Insert mode repairs each missing argument in place, while $ and j help you reach every closing parenthesis efficiently.",
       hints: [
-        "Each call is missing its argument.",
-        "Fill the first at the cursor, then use j$ to reach each closing parenthesis.",
+        "Each call is missing its argument before the closing parenthesis.",
+        "Fix the first one at the cursor, then use j$ to land at the end of the next line and insert the remaining values.",
       ],
       scene: {
         tiles: ["....", "...P", "....", "...."],
@@ -121,10 +125,10 @@ export const fabricationDeckPuzzles = [
       start: ["# dispatch"],
       target: ["# dispatch", "move(2)"],
       optimal: "omove(2)<Esc>",
-      helper: "o opens a new line below and enters Insert mode.",
+      helper: "o creates a new line below the current one and immediately starts Insert mode for the new command.",
       hints: [
-        "The new instruction belongs below the comment.",
-        "Press o, type move(2), then escape.",
+        "The new instruction belongs immediately below the comment.",
+        "Press o, type move(2), then press <Esc>.",
       ],
       scene: routeScene(robot, 2, "PATCH-5 leaves dispatch."),
     },
@@ -134,10 +138,10 @@ export const fabricationDeckPuzzles = [
       target: ["# approved", "move(2)"],
       optimal: "O# approved<Esc>",
       helper:
-        "O opens a line above; inserted comments can restore program context without changing execution.",
+        "O inserts a line above the current one, which is useful when a comment must explain the command without changing the execution path.",
       hints: [
-        "The approval belongs above the command.",
-        "Use O, type the comment, then escape.",
+        "The approval note belongs before the move command.",
+        "Use O, type # approved, then press <Esc>.",
       ],
       scene: routeScene(robot, 2, "PATCH-5 runs the approved route."),
     },
@@ -147,10 +151,10 @@ export const fabricationDeckPuzzles = [
       target: ["open(press)", "wait(2)", "move(1)", "close(press)"],
       optimal: "owait(2)<Esc>omove(1)<Esc>",
       helper:
-        "Repeated o commands build a sequence while preserving the surrounding lines.",
+        "Repeat o to add new lines in the middle of a block while keeping the surrounding instructions intact.",
       hints: [
-        "Both missing steps belong between open and close.",
-        "Open below the first line for wait(2), escape, then open below again for move(1).",
+        "The missing safety steps belong between open(press) and close(press).",
+        "Open a new line below the first instruction for wait(2), then open another line below the new one for move(1).",
       ],
       scene: {
         tiles: ["....", ".AP.", "...."],
@@ -172,8 +176,11 @@ export const fabricationDeckPuzzles = [
       start: ["# broken", "move(2)"],
       target: ["move(2)"],
       optimal: "dd",
-      helper: "dd deletes the current line.",
-      hints: ["The entire first line is unwanted.", "Press dd."],
+      helper: "dd removes the entire current line, which is exactly what you want for a stale debug statement.",
+      hints: [
+        "The first line is an unwanted debug comment and should be removed entirely.",
+        "Press dd to delete it.",
+      ],
       scene: routeScene(robot, 2, "PATCH-5 ignores the stale debug line."),
     },
     integration: {
@@ -181,8 +188,12 @@ export const fabricationDeckPuzzles = [
       start: ["move(2)", "# remove"],
       target: ["move(2)"],
       optimal: "Gdd",
-      helper: "Jump to the program end, then use dd on the unwanted line.",
-      hints: ["The diagnostic is the final line.", "Use G, then dd."],
+      helper:
+        "G jumps to the last line, then dd deletes the stray diagnostic without changing the valid command above it.",
+      hints: [
+        "The final line is the extra diagnostic and should be deleted.",
+        "Use G, then dd.",
+      ],
       scene: routeScene(robot, 2, "PATCH-5 runs the compact controller."),
     },
     advanced: {
@@ -191,10 +202,10 @@ export const fabricationDeckPuzzles = [
       target: ["open(press)", "move(1)", "close(press)"],
       optimal: "ddJ",
       helper:
-        "dd removes a whole line and J rejoins a statement split across adjacent lines.",
+        "Delete the comment line, then use J to join the split call back into a single instruction.",
       hints: [
-        "First remove the obsolete comment.",
-        "The cursor then sits on the split call; use J to join its closing parenthesis.",
+        "A useless comment sits above the broken open(press) call.",
+        "Press dd to remove the comment, then use J to join the split function call.",
       ],
       scene: {
         tiles: ["....", ".AP.", "...."],
@@ -218,9 +229,9 @@ export const fabricationDeckPuzzles = [
       target: ["set(press, 2)"],
       optimal: "r2ur2",
       helper:
-        "u undoes the last change; make, undo, and restore a correction to learn the history boundary.",
+        "u undoes the last edit, so you can test a correction, reverse it, and then restore the final value.",
       hints: [
-        "Replace 1 with 2, undo it, then make the replacement again.",
+        "Change 1 to 2, undo it, then make the same replacement again.",
         "Use r2, u, then r2.",
       ],
       scene: routeScene(robot, 2, "PATCH-5 restores the calibrated move."),
@@ -231,9 +242,10 @@ export const fabricationDeckPuzzles = [
       cursor: { line: 1, col: 11 },
       target: ["wait(1)", "set(press, 3)"],
       optimal: "r3u<C-r>",
-      helper: "<C-r> reapplies an edit that u just reversed.",
+      helper:
+        "<C-r> redoes the last undone change, which is useful when you temporarily revert a fix and need it back.",
       hints: [
-        "Make the correct replacement, undo it, then redo it.",
+        "The correct value is 3, but the edit is undone before it is restored.",
         "Use r3, u, then <C-r>.",
       ],
       scene: routeScene(robot, 3, "PATCH-5 reapplies the approved route."),
@@ -245,10 +257,10 @@ export const fabricationDeckPuzzles = [
       target: ["wait(1)", "turn(left)", "move(2)"],
       optimal: "r9ur2u<C-r>",
       helper:
-        "A new edit after undo replaces the redo branch; undo and redo that new correction deliberately.",
+        "Undo to back up through the history, then redo the corrected branch after a mistaken replacement changes the timeline.",
       hints: [
-        "Make a wrong replacement, undo it, then make the right one.",
-        "Undo the right edit once more and use <C-r> to finish.",
+        "The first replacement is wrong; undo it, then make the correct one.",
+        "Undo the correct edit once more and finish with <C-r> to restore the final version.",
       ],
       scene: {
         tiles: ["....", "...P", "....", "...."],
@@ -266,10 +278,10 @@ export const fabricationDeckPuzzles = [
       start: ["wait(9)"],
       target: ["move(2)"],
       optimal: "ccmove(2)<Esc>",
-      helper: "cc changes the whole current line and enters Insert mode.",
+      helper: "cc replaces the entire current line, which is the best move when the whole instruction is wrong.",
       hints: [
-        "The complete instruction is wrong.",
-        "Use cc, type move(2), then escape.",
+        "The entire instruction must be rewritten.",
+        "Press cc, type move(2), then press <Esc>.",
       ],
       scene: routeScene(robot, 2, "PATCH-5 replaces the stalled instruction."),
     },
@@ -278,10 +290,11 @@ export const fabricationDeckPuzzles = [
       start: ["turn(right)", "wait(9)"],
       target: ["turn(right)", "move(2)"],
       optimal: "Gccmove(2)<Esc>",
-      helper: "Program-end movement selects a distant line for cc.",
+      helper:
+        "G moves to the last line, then cc rewrites the entire instruction without touching the lines above it.",
       hints: [
-        "Only the final instruction is wrong.",
-        "Use G, then cc and type the replacement.",
+        "Only the last instruction is wrong.",
+        "Use G, then cc, type move(2), and finish with <Esc>.",
       ],
       scene: {
         tiles: ["....", "....", ".P..", "...."],
@@ -298,10 +311,10 @@ export const fabricationDeckPuzzles = [
       target: ["open(press)", "move(1)", "close(press)"],
       optimal: "ccopen(press)<Esc>jccmove(1)<Esc>jccclose(press)<Esc>",
       helper:
-        "Apply line changes across several related instructions to rebuild a complete cycle.",
+        "Use cc on each line to replace the whole instruction, then move down with j to continue the cycle rebuild.",
       hints: [
-        "Every line needs a full replacement.",
-        "Use cc on each line, moving down with j after escaping.",
+        "Every line in the sequence must be rewritten completely.",
+        "Run cc on the first line, then use j to reach the next one and repeat the same replacement pattern.",
       ],
       scene: {
         tiles: ["....", ".AP.", "...."],
@@ -323,8 +336,11 @@ export const fabricationDeckPuzzles = [
       start: ["move(1)"],
       target: ["move(1)", "move(1)"],
       optimal: "yyp",
-      helper: "yy yanks the current line; p puts its copy below.",
-      hints: ["The same move is needed twice.", "Use yy, then p."],
+      helper: "yy copies the current line, and p pastes it below to duplicate the instruction.",
+      hints: [
+        "The same move command is needed twice.",
+        "Use yy, then p to duplicate it.",
+      ],
       scene: routeScene(robot, 2, "PATCH-5 repeats the conveyor step."),
     },
     integration: {
@@ -333,10 +349,10 @@ export const fabricationDeckPuzzles = [
       target: ["close(press)", "move(1)", "close(press)"],
       optimal: "yyGp",
       helper:
-        "Yank a line, jump to the placeholder at the program end, and put the copy there.",
+        "Yank a whole line, jump to the end of the file, and put it there to replace the placeholder without losing the original.",
       hints: [
-        "The first line is the replacement text.",
-        "Use yy, G, then p; the placeholder is replaced by the linewise put.",
+        "The last line is a placeholder that needs the earlier close(press) command copied over it.",
+        "Use yy, G, then p.",
       ],
       scene: {
         tiles: ["....", ".AP.", "...."],
@@ -357,10 +373,10 @@ export const fabricationDeckPuzzles = [
       target: ["move(1)", "turn(right)", "move(1)", "turn(right)"],
       optimal: "2yyP",
       helper:
-        "Counts extend yy and p so a multi-line sequence can be copied as a unit.",
+        "Counts extend yank and put so you can duplicate several lines as one block and place it where the cycle repeats.",
       hints: [
         "The first two lines form the reusable cycle.",
-        "Use 2yy, jump to the end, then 2p to replace both placeholders.",
+        "Use 2yy, then place the block at the end with 2p to replace both placeholders.",
       ],
       scene: {
         tiles: ["....", "...P", "....", "...."],
