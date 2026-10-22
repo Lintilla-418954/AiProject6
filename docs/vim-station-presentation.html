@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vim Station — 10-Page Presentation</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: #111b2c;
+        --panel-alt: #17273d;
+        --ink: #e8edf7;
+        --muted: #a5b4cf;
+        --accent: #57c7ff;
+        --accent2: #9ae6b4;
+        --warn: #f8d57e;
+        --shadow: rgba(0,0,0,0.22);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        font-family: Inter, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      body {
+        padding: 24px;
+      }
+
+      .deck {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .slide {
+        position: relative;
+        page-break-after: always;
+        break-after: page;
+        min-height: 1123px; /* approx A4 height at 96 dpi */
+        background: linear-gradient(160deg, var(--panel), var(--panel-alt));
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px var(--shadow);
+        padding: 48px 56px 36px;
+        overflow: hidden;
+      }
+
+      .slide::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(87,199,255,0.18), transparent 70%);
+      }
+
+      .slide > * { position: relative; z-index: 1; }
+
+      h1, h2, h3 { margin: 0 0 14px 0; }
+      h1 { font-size: 42px; margin-bottom: 18px; }
+      h2 { font-size: 30px; }
+      h3 { font-size: 22px; color: var(--accent2); }
+      p, li { font-size: 18px; line-height: 1.55; color: var(--ink); }
+      ul, ol { padding-left: 26px; margin: 16px 0; }
+      .muted { color: var(--muted); }
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 24px;
+      }
+
+      .card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 18px 20px;
+      }
+
+      .kicker {
+        display: inline-block;
+        background: rgba(87,199,255,0.12);
+        color: var(--accent);
+        border: 1px solid rgba(87,199,255,0.25);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .tag {
+        display: inline-block;
+        margin: 0 6px 6px 0;
+        background: rgba(154,230,180,0.12);
+        color: var(--accent2);
+        border: 1px solid rgba(154,230,180,0.25);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      pre {
+        margin: 0;
+        background: rgba(6,10,18,0.7);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 16px 18px;
+        overflow: auto;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, monospace;
+      }
+
+      .big-number {
+        font-size: 72px;
+        line-height: 1;
+        font-weight: 800;
+        color: var(--accent);
+        margin: 8px 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 18px;
+        font-size: 16px;
+      }
+
+      th, td {
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: 12px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th { color: var(--accent); }
+
+      .footer {
+        position: absolute;
+        right: 42px;
+        bottom: 18px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .slide {
+          margin: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck">
+      <section class="slide">
+        <div class="eyebrow">Presentation</div>
+        <h1>Vim Station</h1>
+        <p class="muted">A browser-based Vim puzzle game that teaches command fluency by repairing corrupted robot programs.</p>
+        <div class="grid2" style="margin-top: 40px;">
+          <div class="card">
+            <h3>Project goal</h3>
+            <p>Turn a starting buffer into a target buffer using valid Vim keystrokes while a robot in the scene performs the result.</p>
+          </div>
+          <div class="card">
+            <h3>Core idea</h3>
+            <p>Players solve programming puzzles with real keystrokes, not mouse-driven editing.</p>
+          </div>
+        </div>
+        <div style="margin-top: 32px;">
+          <span class="tag">React</span>
+          <span class="tag">Vite</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Vim engine</span>
+          <span class="tag">Puzzle curriculum</span>
+        </div>
+        <div class="footer">Page 1</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">What it is</div>
+        <h2>Function of the project</h2>
+        <p>Vim Station is a desktop-browser puzzle game designed to teach Vim from first movement through advanced commands.</p>
+        <div class="grid2" style="margin-top: 20px;">
+          <div class="card">
+            <h3>Gameplay loop</h3>
+            <ul>
+              <li>A puzzle starts with a corrupted robot program.</li>
+              <li>The player edits the text buffer using Vim-like commands.</li>
+              <li>Each accepted keystroke updates the program and robot behavior.</li>
+              <li>The player must match the target buffer before the keystroke budget expires.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Why it matters</h3>
+            <ul>
+              <li>It teaches keyboard-first editing.</li>
+              <li>It turns abstract Vim commands into visual puzzle feedback.</li>
+              <li>It gives immediate, concrete rewards for correct editing.</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top: 22px;">The repository specification describes it as “a web-based puzzle game that teaches vim from zero to advanced by having players solve puzzles using only vim keystrokes.”</p>
+        <div class="footer">Page 2</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">User experience</div>
+        <h2>How players interact with it</h2>
+        <p>Gameplay is desktop-first and keyboard-driven. Players do not use the mouse for buffer edits; they use Vim commands such as motion, deletion, insertion, and change operations.</p>
+        <div class="grid2" style="margin-top: 20px;">
+          <div class="card">
+            <h3>Typical actions</h3>
+            <ul>
+              <li><code>h j k l</code> to move the cursor</li>
+              <li><code>w</code> / <code>b</code> / <code>$</code> for motions</li>
+              <li><code>dd</code> / <code>D</code> / <code>c</code> / <code>dw</code> for edits</li>
+              <li><code>i</code>, <code>a</code>, <code>o</code> to insert or open lines</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Game feedback</h3>
+            <ul>
+              <li>Target text is checked after each accepted token.</li>
+              <li>The robot scene visually reacts to the edited program.</li>
+              <li>Hints and budgets reinforce efficient play.</li>
+            </ul>
+          </div>
+        </div>
+        <pre style="margin-top: 22px;"><code>Start:  move to word  ->  delete word  ->  insert corrected text</code></pre>
+        <div class="footer">Page 3</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Puzzle structure</div>
+        <h2>Game design and curriculum</h2>
+        <p>The project organizes learning into a curriculum of ordered Vim concepts, each built into puzzles and chapters.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Commands example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Navigation</td><td><code>h j k l</code>, <code>w b e</code></td></tr>
+            <tr><td>Line movement</td><td><code>0 ^ $</code>, <code>gg G</code></td></tr>
+            <tr><td>Bracket matching</td><td><code>%</code></td></tr>
+            <tr><td>Editing</td><td><code>dd D J</code>, <code>cc C s S</code></td></tr>
+            <tr><td>Counts and motions</td><td><code>dw</code>, <code>cw</code>, <code>3w</code></td></tr>
+            <tr><td>Advanced</td><td><code>y{motion}</code>, <code>i(</code>, <code>:%s</code></td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 18px;">Chapters unlock as the player passes earlier stages, with test-out puzzles verifying mastery of the chapter’s commands.</p>
+        <div class="footer">Page 4</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Architecture</div>
+        <h2>Project architecture</h2>
+        <div class="grid2">
+          <div class="card">
+            <h3>Frontend</h3>
+            <ul>
+              <li>React + Vite for the application shell.</li>
+              <li>TanStack Router handles navigation and hash history.</li>
+              <li>Local storage persists progress and settings.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Content layer</h3>
+            <ul>
+              <li>Curriculum definitions file the learning roadmap.</li>
+              <li>Puzzle files encode the level objective and state.</li>
+              <li>Validation scripts check puzzle integrity and solve correctness.</li>
+            </ul>
+          </div>
+        </div>
+        <pre style="margin-top: 22px;"><code>src/
+  app/          # router, state, app context
+  content/     # puzzles, curriculum, validation
+  game/        # gameplay logic and scene support
+  engine/      # editor / Vim semantics engine
+  ui/          # interface components
+  scene/       # robot + spatial rendering
+</code></pre>
+        <div class="footer">Page 5</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Key system</div>
+        <h2>Core engine: Vim semantics</h2>
+        <p>The heart of the project is a deterministic, serializable editor engine that models Normal mode, counts, pending commands, ranges, and cursor movement.</p>
+        <div class="grid2" style="margin-top: 18px;">
+          <div class="card">
+            <h3>Public API</h3>
+            <pre><code>initialState(lines, cursor)
+step(state, token)
+run(state, tokens)
+parseKeys(notation)
+formatKeys(tokens)</code></pre>
+          </div>
+          <div class="card">
+            <h3>Important behaviors</h3>
+            <ul>
+              <li>Count handling is preserved during operator parsing.</li>
+              <li>Cursor destinations are separated from operator ranges.</li>
+              <li>Multi-key motions and half-open ranges follow Vim semantics.</li>
+              <li>Commands like <code>dw</code>, <code>cw</code>, <code>%</code>, and <code>J</code> are modeled carefully.</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top: 18px;">This is critical because the project must stay aligned with real Neovim behavior and produce trustworthy puzzle feedback.</p>
+        <div class="footer">Page 6</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Example</div>
+        <h2>Example puzzle flow</h2>
+        <pre><code>Starting buffer:
+move 1 2 3 4
+
+Target buffer:
+move 1 2 4
+
+Possible Vim sequence:
+  3dw
+</code></pre>
+        <p>This example highlights a common mechanic: using a motion with a delete operator to remove a word or a range. The engine must correctly handle count semantics and the target cursor location after execution.</p>
+        <div class="grid2" style="margin-top: 18px;">
+          <div class="card">
+            <h3>Movement</h3>
+            <p><code>w</code>, <code>b</code>, <code>e</code>, <code>gg</code>, and <code>G</code> move through the file in a way that matches Vim expectations.</p>
+          </div>
+          <div class="card">
+            <h3>Editing</h3>
+            <p><code>dw</code> deletes the current word, while <code>cw</code> changes the word and enters insert mode, preserving the new cursor semantics.</p>
+          </div>
+        </div>
+        <div class="footer">Page 7</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Examples</div>
+        <h2>Representative Vim interactions</h2>
+        <p>The game’s puzzle definitions include sequences that are meant to teach real, useful developer editing habits.</p>
+        <pre><code># Motion and selection
+/needle&lt;CR&gt;
+n
+# Line operations
+dd
+D
+J
+
+# Word and change operations
+dw
+cw
+ci"
+ci(
+
+# Program movement
+%
+gg
+G
+$</code></pre>
+        <p>These commands are not just conceptual; they are part of a ruleset the engine validates against real-world Vim semantics and test fixtures.</p>
+        <div class="footer">Page 8</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Quality and validation</div>
+        <h2>Testing, oracle checks, and correctness</h2>
+        <p>The repository includes strong verification scripts, including content validation and example verification. These are important because a Vim-based game only succeeds if the engine reproduces the editor’s actual behavior faithfully.</p>
+        <ul>
+          <li><code>npm test</code> runs unit and engine regression tests.</li>
+          <li><code>npm run typecheck</code> validates TypeScript correctness.</li>
+          <li><code>npm run validate:content</code> checks puzzle integrity.</li>
+          <li><code>npm run verify:examples</code> confirms example semantics.</li>
+          <li><code>npm run verify:oracle</code> compares behavior against Neovim-backed oracle checks.</li>
+        </ul>
+        <p>This approach is especially useful in a project where small parsing bugs can cause large gameplay and pedagogy problems.</p>
+        <div class="footer">Page 9</div>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Conclusion</div>
+        <h2>Summary</h2>
+        <p>Vim Station combines a browser game, a curriculum, and a Vim engine into a single educational product. It teaches editing by making the player solve real robot-program repair challenges using only keyboard-based commands.</p>
+        <div class="grid2" style="margin-top: 18px;">
+          <div class="card">
+            <h3>What makes it strong</h3>
+            <ul>
+              <li>Clear teaching arc through chapters and concepts</li>
+              <li>Immediate feedback from scene and buffer changes</li>
+              <li>Real Vim semantics rather than simplified fiction</li>
+              <li>Rigorous testing and oracle validation</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>What it teaches</h3>
+            <ul>
+              <li>Cursor motion and line navigation</li>
+              <li>Deletion, change, and word operations</li>
+              <li>Counts, multi-key motions, and range semantics</li>
+              <li>Efficient editing habits in a real developer workflow</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top: 20px; font-size: 20px;">In short: this project turns Vim from a memorization exercise into a playable, interactive, measurable skill-building experience.</p>
+        <div class="footer">Page 10</div>
+      </section>
+    </div>
+  </body>
+</html>
