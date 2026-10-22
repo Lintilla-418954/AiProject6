@@ -92,8 +92,6 @@ select:focus-visible {
   line-height: 1.6;
 }
 .hero-actions {
-  display: flex;
-  gap: 12px;
   margin-bottom: 80px;
 }
 .primary-action,
@@ -116,9 +114,6 @@ select:focus-visible {
   color: var(--text-0);
 }
 .feature-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
   border: 1px solid var(--ink-3);
   background: var(--ink-3);
 }
@@ -153,10 +148,6 @@ select:focus-visible {
   margin: 0;
   font-size: 54px;
   letter-spacing: -0.04em;
-}
-.chapter-list {
-  display: grid;
-  gap: 16px;
 }
 .chapter-card {
   display: grid;
@@ -193,11 +184,6 @@ select:focus-visible {
 .chapter-intro {
   margin: 0 0 24px;
   color: var(--text-1);
-}
-.puzzle-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
 }
 .puzzle-chip {
   position: relative;
