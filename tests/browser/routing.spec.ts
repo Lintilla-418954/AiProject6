@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const puzzlePath = "#/puzzle/01-grid-moves-intro";
+const puzzlePath = "#/puzzle/01-grid-moves-introductory";
 
 test.describe("application routing", () => {
   test("loads and refreshes every named route", async ({ page }) => {
@@ -8,7 +8,7 @@ test.describe("application routing", () => {
       ["#/", /Repair the station/],
       ["#/chapters", "Chapters"],
       ["#/settings", "Settings"],
-      [puzzlePath, /HAULER-7 steps out/],
+      [puzzlePath, /SCOUT-3 reaches the docking beacon/],
     ] as const) {
       await page.goto(`/${path}`);
       await expect(page.getByRole("heading", { name: heading })).toBeVisible();
@@ -38,7 +38,7 @@ test.describe("application routing", () => {
     await page.getByRole("link", { name: "Open Chapter Menu" }).click();
     await page.locator(".puzzle-chip").first().click();
     await page.keyboard.press("j");
-    await expect(page.locator(".key-count")).toHaveText("1 / 11 keys");
+    await expect(page.locator(".key-count")).toHaveText("1 / 7 keys");
 
     await page.getByRole("link", { name: "Chapters" }).click();
     await page.getByRole("link", { name: "Settings" }).click();
@@ -54,6 +54,6 @@ test.describe("application routing", () => {
     await page.getByRole("link", { name: "Chapters" }).click();
     await page.keyboard.press("j");
     await page.goBack();
-    await expect(page.locator(".key-count")).toHaveText("0 / 11 keys");
+    await expect(page.locator(".key-count")).toHaveText("0 / 7 keys");
   });
 });
