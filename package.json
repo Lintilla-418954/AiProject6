@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:browser": "playwright test",
     "validate:content": "node tools/validate-content.ts --replay",
+    "report:content": "node tools/validate-content.ts --report",
     "verify:oracle": "node tools/oracle/verify.ts",
     "verify:solver": "node tools/solver/verify.ts",
     "verify:examples": "node spec/verify-examples.ts",

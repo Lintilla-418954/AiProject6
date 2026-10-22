@@ -1,8 +1,17 @@
 import { puzzles } from "../src/content/index.ts";
-import { validateContent } from "../src/content/validate.ts";
+import { puzzleInventory, validateContent } from "../src/content/validate.ts";
 
 const replay = process.argv.includes("--replay");
+const report = process.argv.includes("--report");
 const issues = validateContent(puzzles, { replay });
+if (report) {
+  console.table(
+    puzzleInventory(puzzles).map((row) => ({
+      ...row,
+      trace: row.trace.join(" "),
+    })),
+  );
+}
 if (issues.length) {
   for (const issue of issues)
     console.error(`FAIL ${issue.puzzleId}: ${issue.message}`);

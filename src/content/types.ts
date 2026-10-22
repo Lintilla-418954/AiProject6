@@ -63,7 +63,6 @@ export interface Concept {
   order: number;
   chapterId: string;
   commands: string[];
-  advanced: boolean;
 }
 
 export interface Chapter {

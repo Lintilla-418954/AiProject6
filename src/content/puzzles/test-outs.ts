@@ -1,0 +1,92 @@
+import { definePuzzle, type PuzzleDef, type SceneSpec } from "../types.ts";
+
+function scene(robotName: string, distance: number): SceneSpec {
+  const width = distance + 3;
+  const middle = `.${".".repeat(distance - 1)}P${".".repeat(width - distance - 1)}`;
+  return {
+    tiles: [".".repeat(width), middle, ".".repeat(width)],
+    robotStart: { x: 1, y: 1, facing: "E" },
+    objective: {
+      text: `${robotName} completes the Chapter diagnostic.`,
+      conditions: [{ robotAt: { x: 1 + distance, y: 1 } }],
+    },
+  };
+}
+
+export const testOutPuzzles: readonly PuzzleDef[] = [
+  definePuzzle({
+    id: "test-out-docking-ring",
+    title: "Docking Ring Full Diagnostic",
+    robotName: "SCOUT-3",
+    role: "test-out",
+    chapter: "docking-ring",
+    start: ["xmove(1)", "move(1)x"],
+    cursor: { line: 0, col: 0 },
+    target: ["move(1)", "move(1)"],
+    optimal: "xG$x",
+    budget: { two: 7, pass: 11 },
+    helper: "",
+    hints: [],
+    scene: scene("SCOUT-3", 2),
+  }),
+  definePuzzle({
+    id: "test-out-fabrication-deck",
+    title: "Fabrication Deck Full Diagnostic",
+    robotName: "PATCH-5",
+    role: "test-out",
+    chapter: "fabrication-deck",
+    start: ["wait(1)"],
+    cursor: { line: 0, col: 0 },
+    target: ["move(2)", "move(2)"],
+    optimal: "ccmove(2)<Esc>yyp",
+    budget: { two: 16, pass: 21 },
+    helper: "",
+    hints: [],
+    scene: scene("PATCH-5", 4),
+  }),
+  definePuzzle({
+    id: "test-out-airlock-network",
+    title: "Airlock Network Full Diagnostic",
+    robotName: "HAULER-7",
+    role: "test-out",
+    chapter: "airlock-network",
+    start: ["junk move(1)", "move(1)"],
+    cursor: { line: 0, col: 0 },
+    target: ["move(2)", "move(2)"],
+    optimal: "dwf1<C-a>j$h<C-a>",
+    budget: { two: 13, pass: 18 },
+    helper: "",
+    hints: [],
+    scene: scene("HAULER-7", 4),
+  }),
+  definePuzzle({
+    id: "test-out-sensor-array",
+    title: "Sensor Array Full Diagnostic",
+    robotName: "TRACE-4",
+    role: "test-out",
+    chapter: "sensor-array",
+    start: ["xmove(1)", "xmove(1)", "xmove(1)"],
+    cursor: { line: 0, col: 0 },
+    target: ["move(1)", "move(1)", "move(1)"],
+    optimal: "<C-v>jjx",
+    budget: { two: 7, pass: 12 },
+    helper: "",
+    hints: [],
+    scene: scene("TRACE-4", 3),
+  }),
+  definePuzzle({
+    id: "test-out-command-core",
+    title: "Command Core Full Diagnostic",
+    robotName: "RELAY-0",
+    role: "test-out",
+    chapter: "command-core",
+    start: ["# debug", "move(9)", "move(9)"],
+    cursor: { line: 0, col: 0 },
+    target: ["move(2)", "move(2)"],
+    optimal: ":g/^#/d<CR>:%s/9/2/g<CR>",
+    budget: { two: 25, pass: 31 },
+    helper: "",
+    hints: [],
+    scene: scene("RELAY-0", 4),
+  }),
+];
