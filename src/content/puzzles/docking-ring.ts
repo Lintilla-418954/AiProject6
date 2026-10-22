@@ -6,48 +6,47 @@ export const dockingRingPuzzles = [
   ...defineConceptPuzzles("grid-moves", {
     introductory: {
       title: "Loose Coupling",
-      start: ["movex(2)"],
-      cursor: { line: 0, col: 4 },
+      start: ["moxve(2)"],
       target: ["move(2)"],
-      optimal: "x",
+      optimal: "llx",
       helper:
         "h j k l move one cell at a time; x removes the character under the cursor.",
       hints: [
-        "The cursor is already on the loose x.",
-        "Press x to cut the extra character.",
+        "The extra x is near the start of the line.",
+        "Move right until the cursor reaches x, then cut it.",
       ],
       scene: routeScene(robot, 2, "SCOUT-3 reaches the docking beacon."),
     },
     integration: {
-      title: "Offset Thruster",
-      start: ["move(3)x"],
-      target: ["move(3)"],
-      optimal: "7lx",
+      title: "Split Couplings",
+      start: ["mxove(1)", "movex(2)"],
+      target: ["move(1)", "move(2)"],
+      optimal: "lxjlllx",
       helper:
-        "Combine horizontal movement with x to remove a fault elsewhere on the line.",
+        "Move horizontally and vertically to remove faults on different lines.",
       hints: [
-        "The stray x is at the far end.",
-        "Move right seven cells, then cut it.",
+        "Each line has one extra x at a different column.",
+        "Repair the first line, move down, then travel right to the second fault.",
       ],
       scene: routeScene(robot, 3, "SCOUT-3 crosses the outer approach lane."),
     },
     advanced: {
       title: "Three Loose Leads",
-      start: ["xmove(1)", "turn(left)x", "move(2)x"],
-      target: ["move(1)", "turn(left)", "move(2)"],
-      optimal: "xj$xj$x",
+      start: ["movex(2)", "turxn(right)", "mxove(2)"],
+      target: ["move(2)", "turn(right)", "move(2)"],
+      optimal: "jjlxkllxklx",
       helper:
-        "Use vertical and horizontal grid movement to repair several lines without leaving Normal mode.",
+        "Plan a route with h j k l that reaches faults across several lines, then remove each one with x.",
       hints: [
-        "The faults sit at alternating line edges.",
-        "Cut the first x, then use j and $ for the trailing faults.",
+        "The three faults occupy different columns.",
+        "Start with the lower fault, then work upward through the remaining lines.",
       ],
       scene: {
-        tiles: [".....", "...P.", ".....", "....."],
-        robotStart: { x: 1, y: 3, facing: "E" },
+        tiles: [".....", ".....", ".....", "...P.", "....."],
+        robotStart: { x: 1, y: 1, facing: "E" },
         objective: {
           text: "SCOUT-3 follows the bent approach into dock.",
-          conditions: [{ robotAt: { x: 3, y: 1 } }],
+          conditions: [{ robotAt: { x: 3, y: 3 } }, { robotFacing: "S" }],
         },
       },
     },
