@@ -60,13 +60,13 @@ Scrolling/screen-relative commands, marks, Replace mode, `gu`, `gU`, `g~{motion}
 
 | Chapter          | Region                                | Concepts | Regular Puzzles | Test-Out | Total |
 | ---------------- | ------------------------------------- | -------: | --------------: | -------: | ----: |
-| Docking Ring     | Restore navigation and inspect damage |      1–6 |              13 |        1 |    14 |
-| Fabrication Deck | Restore editing and cargo systems     |     7–13 |              14 |        1 |    15 |
-| Airlock Network  | Restore environmental routing         |    14–20 |              18 |        1 |    19 |
-| Sensor Array     | Repair repeated and selected data     |    21–27 |              17 |        1 |    18 |
-| Command Core     | Recover station automation            |    28–31 |              11 |        1 |    12 |
+| Docking Ring     | Restore navigation and inspect damage |      1–6 |              18 |        1 |    19 |
+| Fabrication Deck | Restore editing and cargo systems     |     7–13 |              21 |        1 |    22 |
+| Airlock Network  | Restore environmental routing         |    14–20 |              21 |        1 |    22 |
+| Sensor Array     | Repair repeated and selected data     |    21–27 |              21 |        1 |    22 |
+| Command Core     | Recover station automation            |    28–31 |              12 |        1 |    13 |
 
-The 78 Puzzles comprise 31 Introductory, 31 Integration, 11 Advanced, and five Test-Out Puzzles. Advanced Puzzles exist for Character seek, Counts, Delete with motion, Change with motion, Delimiter objects, Repeat, Search, Visual block, Macros, Substitute, and Global.
+The 98 Puzzles comprise 31 Introductory, 31 Integration, 31 Advanced, and five Test-Out Puzzles. Every Concept presents those three regular roles consecutively before the curriculum advances.
 
 Chapter 1 is initially unlocked. Regular Puzzles unlock in curriculum order. Every unlocked Chapter exposes its Test-Out immediately. Passing the final regular Puzzle or the Test-Out unlocks the next Chapter. Test-Out completion never invents results for skipped Puzzles; those remain playable.
 
@@ -78,7 +78,7 @@ Each `src/content/puzzles/<id>.ts` is data-only and exports `definePuzzle({...})
 
 Start and target use printable ASCII. Attempts begin in Normal mode with empty registers. Toolkit and play order derive from curriculum. Regular budgets derive from Optimal Solution length and are not authored.
 
-Introductory Puzzles isolate their Concept. Integration Puzzles trace at least one current and one earlier Concept command. Advanced Puzzles explore a distinct deeper behavior. Test-Outs exercise every Chapter command.
+Introductory Puzzles isolate their Concept. Integration Puzzles trace at least one current and one earlier Concept command. Advanced Puzzles explore a distinct deeper behavior and are predominantly multiline; the few single-line Advanced Puzzles focus on command depth where extra lines would be artificial. Test-Outs remain after all Concept sequences in their Chapter.
 
 Regular Puzzles have Helper Text and exactly two Hints: a conceptual command/pattern nudge, then a concrete starting strategy that is not the complete Optimal Solution. Test-Outs have neither. Trusted author markup disables raw HTML; key notation is parsed during validation.
 
@@ -175,7 +175,7 @@ Unlocks derive from results. Unknown Puzzle records are retained but ignored. In
 
 ## Validation and delivery
 
-Content validation checks IDs/files/references/cardinality; printable distinct buffers and cursor bounds; Scene/entity integrity; start failure and target success; Optimal solve only on its final token; Normal mode and no pending command; Toolkit and role traces; Test-Out coverage and omission searches; budgets; Helper/Hint rules and notation; bounded beam search for shorter solutions; and exhaustive proof where `O <= 6`.
+Content validation checks IDs/references/cardinality; printable distinct buffers and cursor bounds; Scene/entity integrity; Optimal solve only on its final token; Normal mode and no pending command; Toolkit and role traces; normalized duplicate repairs; Test-Out coverage; budgets; and Helper/Hint rules. `npm run report:content` lists every Puzzle's Chapter, Concept, role, line count, Optimal Solution length, and verified command trace for curriculum review.
 
 CI installs from the lockfile, type-checks, tests, validates content, runs deterministic solver checks, builds production, compares the Neovim oracle, and runs Chromium/Firefox/WebKit end-to-end tests. GitHub Pages deploys the static artifact from the default branch. Hash routes avoid server fallback requirements.
 
