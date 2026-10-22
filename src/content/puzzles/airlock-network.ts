@@ -9,10 +9,11 @@ export const airlockNetworkPuzzles = [
       start: ["###move(2)"],
       target: ["move(2)"],
       optimal: "3x",
-      helper: "A numeric count repeats the following command.",
+      helper:
+        "A count before an action repeats that action a fixed number of times, so 3x deletes three characters in a row.",
       hints: [
-        "Three unwanted characters sit under and after the cursor.",
-        "Use 3x.",
+        "The bad text is a run of three characters right after the cursor.",
+        "Press 3x to delete all three at once.",
       ],
       scene: routeScene(robot, 2, "HAULER-7 clears the airlock approach."),
     },
@@ -22,8 +23,11 @@ export const airlockNetworkPuzzles = [
       target: ["move(1)", "move(1)", "move(1)", "move(1)"],
       optimal: "3j$x",
       helper:
-        "Counts apply to motions, so one command can cross several lines before an earlier edit.",
-      hints: ["The fault is three lines below.", "Use 3j, then $x."],
+        "A count can be used with a motion to travel several lines before deleting, which makes distant cleanup much shorter.",
+      hints: [
+        "The stray x is on the fourth line, three lines below the cursor.",
+        "Use 3j to move down, then $x to delete the final character.",
+      ],
       scene: routeScene(robot, 4, "HAULER-7 crosses four relay cells."),
     },
     advanced: {
@@ -32,10 +36,10 @@ export const airlockNetworkPuzzles = [
       target: ["move(1)", "turn(right)", "move(4)"],
       optimal: "8x2j$hhh4x",
       helper:
-        "Compose counts with deletion and vertical movement to repair distant runs of corruption.",
+        "Counts can combine with deletion and line movement to clean up multiple broken runs in one sequence.",
       hints: [
-        "There are eight bad characters at the start and four at the end.",
-        "Use 8x, move down two lines, then $ followed by 4x from the last x by moving left three.",
+        "Delete the eight damaged characters at the start, then move down two lines and remove the four trailing ones.",
+        "Use 8x, 2j, $, hhh, and then 4x.",
       ],
       scene: {
         tiles: [
@@ -63,10 +67,11 @@ export const airlockNetworkPuzzles = [
       start: ["debris wait(3)x"],
       target: ["wait(3)"],
       optimal: "dw$x",
-      helper: "d{motion} deletes the text crossed by a motion.",
+      helper:
+        "d{motion} deletes the text that a motion crosses, so dw removes a whole word and the space that follows it.",
       hints: [
-        "The unwanted word and its following space come first.",
-        "Use dw.",
+        "The unwanted text is a word followed by a space before wait(3).",
+        "Use dw to remove the word, then $x to delete the stray x.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -83,8 +88,11 @@ export const airlockNetworkPuzzles = [
       target: ["move(3)"],
       optimal: "2dw$x",
       helper:
-        "A count before d combines with a word motion to remove several words efficiently.",
-      hints: ["Two leading words are unwanted.", "Use 2dw."],
+        "A count before a delete-motion command lets you remove several words in one action without touching the valid command after them.",
+      hints: [
+        "Two leading words are garbage before the real instruction.",
+        "Use 2dw to delete both words, then $x to remove the stray trailing x.",
+      ],
       scene: routeScene(
         robot,
         3,
@@ -97,10 +105,10 @@ export const airlockNetworkPuzzles = [
       target: ["move(1)", "turn(left)", "wait(1)", "move(2)"],
       optimal: "dw2jdwjdw",
       helper:
-        "Operator-motion edits can be composed with counted line movement across nonadjacent faults.",
+        "Delete-motion edits can be chained with a counted jump to remove several dirty prefixes across different lines.",
       hints: [
-        "Lines one, three, and four have leading debris words.",
-        "Use dw, skip with 2j, use dw, then descend and repeat.",
+        "The first, third, and fourth lines each start with junk to delete.",
+        "Use dw, jump down with 2j, then repeat dw on the remaining dirty lines.",
       ],
       scene: {
         tiles: ["....", "...P", "....", "...."],
@@ -120,10 +128,10 @@ export const airlockNetworkPuzzles = [
       target: ['say("go")'],
       optimal: "cwgo<Esc>",
       helper:
-        "c{motion} deletes a range and enters Insert mode for its replacement.",
+        "c{motion} deletes the text covered by the motion and enters Insert mode, so cw changes a whole word in place.",
       hints: [
-        "Only the first word is wrong.",
-        "Use cw, type move, then escape.",
+        "Only the word inside the quotes is wrong.",
+        "Use cw, type go, then press <Esc>.",
       ],
       scene: routeScene(robot, 2, "HAULER-7 replaces the stalled verb."),
     },
@@ -134,10 +142,10 @@ export const airlockNetworkPuzzles = [
       target: ["turn(right)", "move(2)"],
       optimal: "cwright<Esc>",
       helper:
-        "Change a word in place while preserving punctuation and surrounding instructions.",
+        "Change a word in place while leaving the surrounding command structure alone, which is ideal for fixing a single argument.",
       hints: [
-        "The cursor is on the direction word.",
-        "Use cw, type right, then escape.",
+        "The cursor is on the direction word, and it needs to become right.",
+        "Use cw, type right, then press <Esc>.",
       ],
       scene: {
         tiles: ["....", "....", ".P..", "...."],
@@ -154,10 +162,10 @@ export const airlockNetworkPuzzles = [
       target: ["move(1)", "turn(right)", "move(2)"],
       optimal: "cwmove<Esc>j0cc turn(right)<Esc>0xj0cwmove<Esc>",
       helper:
-        "Use change motions at different cursor positions to retask several related commands.",
+        "Use change motions at different cursor positions to repair several commands in a row, even when the wrong text is on multiple lines.",
       hints: [
-        "The verbs on lines one and three and the direction on line two are wrong.",
-        "Change the first word, descend to the direction with w, then use j0 for the final verb.",
+        "The first and third lines need new verbs, and the middle line needs a direction change.",
+        "Change the first word, move down to the direction, then use j0 to fix the last line.",
       ],
       scene: {
         tiles: ["....", "...P", "....", "...."],
@@ -176,10 +184,11 @@ export const airlockNetworkPuzzles = [
       cursor: { line: 0, col: 5 },
       target: ["move(2)", "move(2)"],
       optimal: "ylj$P",
-      helper: "y{motion} copies a character range; p puts it after the cursor.",
+      helper:
+        "y{motion} copies text that a motion crosses, and p inserts that copied text after the cursor; this is a quick way to duplicate one value.",
       hints: [
-        "Copy the 2 with a one-cell motion.",
-        "Use yl, move down to the closing parenthesis with j$, then p.",
+        "Copy the 2 from the first line, then place it after the cursor on the next line.",
+        "Use yl, move down with j$, then p.",
       ],
       scene: routeScene(robot, 4, "HAULER-7 repeats the copied distance."),
     },
@@ -190,10 +199,10 @@ export const airlockNetworkPuzzles = [
       target: ["grab('cell')", "say('cell')"],
       optimal: "ywj$hP",
       helper:
-        "Yank through a word motion, then navigate to a quoted gap and put the copied text.",
+        "Yank through a word motion to copy the text, then move to the destination and put it there without retyping it.",
       hints: [
-        "Copy cell from inside the first quotes.",
-        "Use yw, move down, use e then h to reach the opening quote, and put after it.",
+        "Copy the word cell from inside the first quotes, then place it into the empty quote on the second line.",
+        "Use yw, move to the target with j$h, then p.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -212,10 +221,10 @@ export const airlockNetworkPuzzles = [
       target: ["open(bay2)", "close(bay2)", "open(bay2)"],
       optimal: "ywj$Pj$P",
       helper:
-        "A yanked word can be put into several distant argument slots without retyping it.",
+        "A copied word can be pasted into several distant argument slots, making repeated values easy to reproduce consistently.",
       hints: [
-        "Yank bay2 from the first call.",
-        "After yw, descend and use $p in each empty call.",
+        "Copy bay2 from the first command and paste it into the empty call arguments below.",
+        "Use yw, move to the target with j$, then p on each blank call.",
       ],
       scene: {
         tiles: ["....", ".B.P", "...."],
@@ -238,10 +247,11 @@ export const airlockNetworkPuzzles = [
       cursor: { line: 0, col: 7 },
       target: ["grab('cell')"],
       optimal: "ciwcell<Esc>",
-      helper: "iw selects the word under the cursor independent of its edges.",
+      helper:
+        "iw selects the word under the cursor as a whole object, so ciw replaces only the word itself without disturbing the surrounding quotes.",
       hints: [
-        "The cursor is inside scrap.",
-        "Use ciw, type cell, then escape.",
+        "The cursor is inside scrap, and the whole word must be replaced.",
+        "Use ciw, type cell, then press <Esc>.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -263,10 +273,10 @@ export const airlockNetworkPuzzles = [
       target: ["move(1) move(2)"],
       optimal: "daw",
       helper:
-        "aw includes a word and adjacent whitespace, making clean deletion possible from inside it.",
+        "aw selects a word together with the surrounding whitespace, which makes it perfect for removing filler text cleanly.",
       hints: [
-        "The cursor sits inside unsafe.",
-        "Use daw to remove the word and one surrounding space.",
+        "The cursor sits inside unsafe, and the word plus its bordering space should disappear.",
+        "Use daw to delete the filler word cleanly.",
       ],
       scene: routeScene(
         robot,
@@ -281,10 +291,10 @@ export const airlockNetworkPuzzles = [
       target: ["grab('cell')", 'say("cell loaded")', "drop()"],
       optimal: "ciwcell<Esc>j0fsciwcell<Esc>",
       helper:
-        "Word objects work inside different delimiters and compose with seek and line movement.",
+        "Word objects can replace a name within different text delimiters and can be combined with search and line movement to edit multiple occurrences.",
       hints: [
-        "Replace scrap in both the cargo command and message.",
-        "Use ciw on the first, then descend, seek s, and use ciw again.",
+        "Replace scrap in both the cargo command and the message text.",
+        "Use ciw on the first word, then move down and repeat after finding the s in the message.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -310,10 +320,11 @@ export const airlockNetworkPuzzles = [
       cursor: { line: 0, col: 7 },
       target: ["grab('cell')"],
       optimal: "ci'cell<Esc>",
-      helper: "i' selects everything inside matching single quotes.",
+      helper:
+        "i' selects the contents inside single quotes, so you can replace just the cargo name while keeping the surrounding delimiters intact.",
       hints: [
-        "Keep the quotes and replace only their contents.",
-        "Use ci', type cell, then escape.",
+        "Keep the quotes and replace only the cargo name inside them.",
+        "Use ci', type cell, then press <Esc>.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -335,10 +346,10 @@ export const airlockNetworkPuzzles = [
       target: ["open(bay3)"],
       optimal: "ci(bay3<Esc>",
       helper:
-        "i( selects the contents of the surrounding parentheses for a change.",
+        "i( selects the content inside parentheses, making it easy to replace a call argument without rewriting the whole function call.",
       hints: [
-        "The call structure is correct; its argument is not.",
-        "Use ci(, type 3, then escape.",
+        "The function name and parentheses are correct; only the number inside needs to change.",
+        "Use ci(, type bay3, then press <Esc>.",
       ],
       scene: routeScene(
         robot,
@@ -353,10 +364,10 @@ export const airlockNetworkPuzzles = [
       target: ["when sensor[2] == 2 {", '  say("clear")', "}"],
       optimal: 'ci[2<Esc>f4r2j0f"lci"clear<Esc>',
       helper:
-        "Different delimiter objects can target brackets and quotes within a multiline block.",
+        "Different delimiter objects can target bracketed values and quoted text inside a multiline block, so one edit can fix several related fields at once.",
       hints: [
-        "Fix the sensor index, comparison value, and quoted message.",
-        'Use ci[ for the index, seek and replace the other digit, then ci" inside the message.',
+        "Fix the index, the comparison value, and the quoted message in the same block.",
+        "Use ci[ for the index, then fix the other number and the message text with the appropriate delimiter object.",
       ],
       scene: {
         tiles: ["...", ".P.", "..."],
@@ -376,8 +387,12 @@ export const airlockNetworkPuzzles = [
       cursor: { line: 0, col: 10 },
       target: ["set(flow, 2)"],
       optimal: "<C-a>",
-      helper: "<C-a> increments the number under or after the cursor.",
-      hints: ["The route needs one more step.", "Press <C-a>."],
+      helper:
+        "<C-a> increments the number under or just after the cursor, which is the simplest way to nudge a value upward by one.",
+      hints: [
+        "The route needs one more step, so increase the number by one.",
+        "Press <C-a>.",
+      ],
       scene: routeScene(robot, 2, "HAULER-7 reaches the inner hatch."),
     },
     integration: {
@@ -387,8 +402,11 @@ export const airlockNetworkPuzzles = [
       target: ["wait(3)", "move(2)"],
       optimal: "2<C-a>",
       helper:
-        "Counts scale a number tweak, changing a value by more than one efficiently.",
-      hints: ["The wait must increase by two.", "Use 2<C-a>."],
+        "A count before <C-a> adds more than one to a number, letting you adjust a value in a single motion.",
+      hints: [
+        "The wait must increase by two, not by one.",
+        "Use 2<C-a> to add two to the number under the cursor.",
+      ],
       scene: {
         ...routeScene(robot, 2, "HAULER-7 waits for the timed hatch."),
         entities: [{ kind: "door", name: "timer", tile: "T", open: true }],
@@ -401,12 +419,13 @@ export const airlockNetworkPuzzles = [
       target: ["wait(3)", "move(2)", "wait(4)", "move(2)"],
       optimal: "3<C-x>2j3<C-a>",
       helper:
-        "Use counted increments and decrements on separate lines to rebalance a timed sequence.",
+        "Use increments and decrements on separate lines to rebalance a timed sequence without rewriting the whole pattern.",
       hints: [
-        "Reduce the first wait by three and increase the second by three.",
+        "Reduce the first wait by three and increase the second wait by three.",
         "Use 3<C-x>, move down two lines, then 3<C-a>.",
       ],
       scene: routeScene(robot, 4, "HAULER-7 balances the pressure cycle."),
     },
   }),
 ];
+
