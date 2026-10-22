@@ -106,8 +106,8 @@ export const dockingRingPuzzles = [
   ...defineConceptPuzzles("line-ends", {
     introductory: {
       title: "End Marker",
-      start: ["move(2)x"],
-      target: ["move(2)"],
+      start: ["wait(2)x"],
+      target: ["wait(2)"],
       optimal: "$x",
       helper: "$ jumps to the final character on the line.",
       hints: ["The fault is at the line end.", "Use $, then x."],
@@ -173,9 +173,9 @@ export const dockingRingPuzzles = [
     },
     advanced: {
       title: "Section Boundaries",
-      start: ["x# primary", "move(1)", "", "# reserve", "move(2)x"],
+      start: ["x# primary", "move(1)", "", "x# reserve", "move(2)x"],
       target: ["# primary", "move(1)", "", "# reserve", "move(2)"],
-      optimal: "xG$x",
+      optimal: "x}jxj$x",
       helper:
         "} crosses a blank-line section boundary; combine it with edge movement for distant repairs.",
       hints: [

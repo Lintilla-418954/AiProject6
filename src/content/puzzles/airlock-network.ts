@@ -115,9 +115,10 @@ export const airlockNetworkPuzzles = [
   ...defineConceptPuzzles("change-motion", {
     introductory: {
       title: "Wrong Verb",
-      start: ["wait(2)"],
-      target: ["move(2)"],
-      optimal: "cwmove<Esc>",
+      start: ['say("wait")'],
+      cursor: { line: 0, col: 5 },
+      target: ['say("go")'],
+      optimal: "cwgo<Esc>",
       helper:
         "c{motion} deletes a range and enters Insert mode for its replacement.",
       hints: [
@@ -305,7 +306,7 @@ export const airlockNetworkPuzzles = [
   ...defineConceptPuzzles("delimiter-objects", {
     introductory: {
       title: "Wrong Cargo",
-      start: ["grab('scrap')"],
+      start: ["grab('ore')"],
       cursor: { line: 0, col: 7 },
       target: ["grab('cell')"],
       optimal: "ci'cell<Esc>",
@@ -329,10 +330,10 @@ export const airlockNetworkPuzzles = [
     },
     integration: {
       title: "Replace Call Argument",
-      start: ["move(99)"],
-      cursor: { line: 0, col: 5 },
-      target: ["move(3)"],
-      optimal: "ci(3<Esc>",
+      start: ["open(bay99)"],
+      cursor: { line: 0, col: 6 },
+      target: ["open(bay3)"],
+      optimal: "ci(bay3<Esc>",
       helper:
         "i( selects the contents of the surrounding parentheses for a change.",
       hints: [
@@ -371,9 +372,9 @@ export const airlockNetworkPuzzles = [
   ...defineConceptPuzzles("number-tweak", {
     introductory: {
       title: "One Step Short",
-      start: ["move(1)"],
-      cursor: { line: 0, col: 5 },
-      target: ["move(2)"],
+      start: ["set(flow, 1)"],
+      cursor: { line: 0, col: 10 },
+      target: ["set(flow, 2)"],
       optimal: "<C-a>",
       helper: "<C-a> increments the number under or after the cursor.",
       hints: ["The route needs one more step.", "Press <C-a>."],

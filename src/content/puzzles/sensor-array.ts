@@ -171,7 +171,7 @@ export const sensorArrayPuzzles = [
         "set(scan, 1)",
         'say("scan done")',
       ],
-      optimal: "2*f9r1",
+      optimal: "*n f9r1",
       helper:
         "Word search ignores intervening lines and lands on a matching identifier for a precise follow-up edit.",
       hints: [
@@ -221,9 +221,9 @@ export const sensorArrayPuzzles = [
     },
     advanced: {
       title: "Pivoted Selection",
-      start: ["junk move(1) scrap"],
+      start: ["junk move(1) scrap", "move(1)"],
       cursor: { line: 0, col: 4 },
-      target: [" move(1) scrap"],
+      target: [" move(1) scrap", "move(1)"],
       optimal: "0vex",
       helper:
         "o swaps the active end of a Visual selection, enabling adjustment from the opposite edge.",
@@ -278,10 +278,10 @@ export const sensorArrayPuzzles = [
       target: ["move(1)", "turn(right)", "move(2)", 'say("ok")'],
       optimal: "<C-v>jjjlllx",
       helper:
-        "Use separate block selections for distant rectangular fields on both sides of a multiline program.",
+        "A four-line block selection removes one aligned field across a larger program.",
       hints: [
-        "First remove the four-character BAD prefix from all lines.",
-        "Then jump to the final line end and select the trailing two-character field upward.",
+        "The BAD prefix occupies the same four columns on every line.",
+        "Select that rectangle from top to bottom, then delete it.",
       ],
       scene: routeScene(robot, 3, "TRACE-4 clears both telemetry margins."),
     },

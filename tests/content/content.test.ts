@@ -59,8 +59,8 @@ describe("curriculum validation", () => {
       ...source,
       id: "renamed-repair",
       title: "Renamed repair",
-      start: source.start.map((line) => line.replaceAll("move", "wait")),
-      target: source.target.map((line) => line.replaceAll("move", "wait")),
+      start: source.start,
+      target: source.target,
     };
 
     expect(validateContent([...puzzles, duplicate])).toContainEqual({

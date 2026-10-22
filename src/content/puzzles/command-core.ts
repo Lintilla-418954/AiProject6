@@ -78,8 +78,8 @@ export const commandCorePuzzles = [
   ...defineConceptPuzzles("substitute", {
     introductory: {
       title: "Local Replacement",
-      start: ["move(9)"],
-      target: ["move(2)"],
+      start: ["set(core, 9)"],
+      target: ["set(core, 2)"],
       optimal: ":s/9/2/<CR>",
       helper:
         ":s/pattern/replacement/ substitutes the first match on the current line.",
@@ -112,11 +112,11 @@ export const commandCorePuzzles = [
       ],
       target: [
         "set(core, 2) # old",
-        'say("core 2")',
+        'say("core 9")',
         "set(core, 2) # old",
         'say("done")',
       ],
-      optimal: ":%s/9/2/g<CR>",
+      optimal: ":g/^set/s/9/2/<CR>",
       helper:
         "A whole-program substitute can update related numeric references across code and messages while preserving context.",
       hints: [

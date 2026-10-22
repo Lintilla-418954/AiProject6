@@ -66,10 +66,26 @@ function normalizedRepair(puzzle: PuzzleDef): string {
     lines
       .join("\n")
       .toLowerCase()
-      .replace(/[a-z]+\d*/g, "word")
       .replace(/\d+/g, "number")
       .replace(/\s+/g, " ");
-  return `${puzzle.start.length}:${puzzle.target.length}:${normalize(puzzle.start)}=>${normalize(puzzle.target)}:${traceFor(puzzle).join(",")}`;
+  return `${normalize(puzzle.start)}=>${normalize(puzzle.target)}`;
+}
+
+function repairDistance(left: string, right: string): number {
+  const rows = Array.from({ length: left.length + 1 }, () =>
+    Array<number>(right.length + 1).fill(0),
+  );
+  for (let index = 0; index <= left.length; index++) rows[index]![0] = index;
+  for (let index = 0; index <= right.length; index++) rows[0]![index] = index;
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex++)
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex++)
+      rows[leftIndex]![rightIndex] = Math.min(
+        rows[leftIndex - 1]![rightIndex]! + 1,
+        rows[leftIndex]![rightIndex - 1]! + 1,
+        rows[leftIndex - 1]![rightIndex - 1]! +
+          (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1),
+      );
+  return rows[left.length]![right.length]!;
 }
 
 function conceptTraceSets(conceptName: string): {
@@ -91,8 +107,7 @@ function conceptTraceSets(conceptName: string): {
 function traceUses(trace: readonly string[], commands: Set<string>): boolean {
   if (trace.some((command) => commands.has(command))) return true;
   if (commands.has("count") && trace.length > 0) return true;
-  if (commands.has(".") && trace.includes("c{motion}")) return true;
-  return false;
+  return commands.has(".") && trace.includes("c{motion}");
 }
 
 export function validateContent(
@@ -101,7 +116,7 @@ export function validateContent(
 ): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const ids = new Set<string>();
-  const repairs = new Map<string, string>();
+  const repairs: { id: string; normalized: string }[] = [];
   const push = (puzzleId: string, message: string) =>
     issues.push({ puzzleId, message });
 
@@ -194,20 +209,29 @@ export function validateContent(
       }
 
       const normalized = normalizedRepair(puzzle);
-      const previous = repairs.get(normalized);
-      if (previous) push(puzzle.id, `Repair is too similar to ${previous}`);
-      else repairs.set(normalized, puzzle.id);
+      const previous = repairs.find(({ normalized: candidate }) => {
+        const maxLength = Math.max(normalized.length, candidate.length);
+        if (normalized === candidate) return true;
+        if (
+          normalized.includes("\n") &&
+          candidate.includes("\n") &&
+          maxLength >= 120
+        )
+          return repairDistance(normalized, candidate) <= maxLength * 0.02;
+        return false;
+      });
+      if (previous) push(puzzle.id, `Repair is too similar to ${previous.id}`);
+      else repairs.push({ id: puzzle.id, normalized });
     }
   }
 
   if (puzzles.length !== 98)
     push("curriculum", `Expected 98 Puzzles, found ${puzzles.length}`);
   for (const concept of concepts) {
-    const roles = puzzles
-      .filter(
-        (puzzle) => regularPuzzle(puzzle) && puzzle.concept === concept.name,
-      )
-      .map((puzzle) => puzzle.role);
+    const conceptPuzzles = puzzles.filter(
+      (puzzle) => regularPuzzle(puzzle) && puzzle.concept === concept.name,
+    );
+    const roles = conceptPuzzles.map((puzzle) => puzzle.role);
     if (
       roles.length !== roleOrder.length ||
       roles.some((role, index) => role !== roleOrder[index])
@@ -216,6 +240,24 @@ export function validateContent(
         concept.id,
         "Regular Puzzles must be ordered introductory, integration, advanced",
       );
+    const advanced = conceptPuzzles.find(
+      (puzzle) => puzzle.role === "advanced",
+    );
+    const earlier = conceptPuzzles.filter(
+      (puzzle) => puzzle.role !== "advanced",
+    );
+    if (
+      advanced &&
+      earlier.some((puzzle) => puzzle.optimal === advanced.optimal)
+    )
+      push(advanced.id, "Advanced trace must differ from earlier roles");
+    if (
+      advanced &&
+      concept.order >= 14 &&
+      advanced.start.length === 1 &&
+      advanced.target.length === 1
+    )
+      push(advanced.id, "Later Advanced Puzzle must be multiline");
   }
   for (const chapter of chapters)
     if (

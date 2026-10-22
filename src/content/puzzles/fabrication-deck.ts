@@ -6,9 +6,9 @@ export const fabricationDeckPuzzles = [
   ...defineConceptPuzzles("overwrite", {
     introductory: {
       title: "Wrong Distance",
-      start: ["move(9)"],
+      start: ["wait(9)"],
       cursor: { line: 0, col: 5 },
-      target: ["move(2)"],
+      target: ["wait(2)"],
       optimal: "r2",
       helper:
         "r{char} replaces the character under the cursor without entering Insert mode.",
@@ -213,9 +213,9 @@ export const fabricationDeckPuzzles = [
   ...defineConceptPuzzles("undo-redo", {
     introductory: {
       title: "Recover the Calibration",
-      start: ["move(1)"],
-      cursor: { line: 0, col: 5 },
-      target: ["move(2)"],
+      start: ["set(press, 1)"],
+      cursor: { line: 0, col: 11 },
+      target: ["set(press, 2)"],
       optimal: "r2ur2",
       helper:
         "u undoes the last change; make, undo, and restore a correction to learn the history boundary.",
@@ -227,9 +227,9 @@ export const fabricationDeckPuzzles = [
     },
     integration: {
       title: "Redo the Approved Edit",
-      start: ["move(1)"],
-      cursor: { line: 0, col: 5 },
-      target: ["move(3)"],
+      start: ["wait(1)", "set(press, 1)"],
+      cursor: { line: 1, col: 11 },
+      target: ["wait(1)", "set(press, 3)"],
       optimal: "r3u<C-r>",
       helper: "<C-r> reapplies an edit that u just reversed.",
       hints: [
@@ -240,9 +240,9 @@ export const fabricationDeckPuzzles = [
     },
     advanced: {
       title: "History Fork",
-      start: ["move(1)", "turn(left)", "move(1)"],
+      start: ["wait(1)", "turn(left)", "move(1)"],
       cursor: { line: 2, col: 5 },
-      target: ["move(1)", "turn(left)", "move(2)"],
+      target: ["wait(1)", "turn(left)", "move(2)"],
       optimal: "r9ur2u<C-r>",
       helper:
         "A new edit after undo replaces the redo branch; undo and redo that new correction deliberately.",
